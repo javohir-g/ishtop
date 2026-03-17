@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Hide scrollbar for tabs */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+
+    <!-- Mobile App Container -->
+    <div class="max-w-md mx-auto bg-white min-h-screen relative pb-28 shadow-xl">
+        
+        <!-- Header Content Wrapper -->
+        <div class="px-6 pt-12">
+            <!-- Top Header -->
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="Profile" class="w-14 h-14 rounded-full object-cover">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Good Morning 👋</p>
+                        <h1 class="text-xl font-semibold tracking-tight text-gray-900 mt-0.5">Andrew Ainsley</h1>
+                    </div>
+                </div>
+                <button class="w-12 h-12 rounded-full border border-gray-100 flex items-center justify-center relative hover:bg-gray-50 transition-colors">
+                    <i data-lucide="bell" stroke-width="1.5" class="w-6 h-6 text-gray-800"></i>
+                    <span class="absolute top-3 right-3.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="mt-8 relative flex items-center">
+                <div class="absolute left-4 text-gray-400">
+                    <i data-lucide="search" stroke-width="1.5" class="w-6 h-6"></i>
+                </div>
+                <input type="text" placeholder="Search for a job or company" class="w-full bg-gray-50/80 hover:bg-gray-100 transition-colors rounded-2xl py-4 pl-12 pr-14 outline-none text-base placeholder-gray-400">
+                <button class="absolute right-4 text-blue-600">
+                    <i data-lucide="sliders-horizontal" stroke-width="1.5" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Banner -->
+            <div class="mt-8 rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 relative overflow-hidden h-48 flex items-center px-6 shadow-md shadow-blue-500/20">
+                <!-- Abstract Background Shapes -->
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-white/20 rounded-full blur-2xl"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+                </div>
+                
+                <div class="relative z-10 w-3/5">
+                    <h2 class="text-white text-[1.35rem] font-semibold tracking-tight leading-snug">See how you can<br>find a job quickly!</h2>
+                    <button class="mt-5 bg-white text-blue-600 rounded-full px-6 py-2.5 text-sm font-semibold shadow-sm hover:bg-gray-50 transition-colors">Read more</button>
+                </div>
+                <div class="absolute bottom-0 right-0 w-[45%] h-[110%] flex items-end justify-end">
+                    <!-- Placeholder for the person image, using a generic unspash image of a professional -->
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400&h=500" alt="Professional" class="h-full object-cover object-top drop-shadow-2xl" style="mask-image: linear-gradient(to top, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to top, black 80%, transparent 100%);">
+                </div>
+            </div>
+
+            <!-- Recommendation Section -->
+            <div class="mt-8 flex justify-between items-center">
+                <h3 class="text-[1.35rem] font-semibold tracking-tight text-gray-900">Recommendation</h3>
+                <a href="#" class="text-blue-600 text-base font-medium hover:underline">See All</a>
+            </div>
+
+            <!-- Recommendation Card -->
+            <div class="mt-5 border border-gray-100 rounded-3xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] bg-white hover:border-gray-200 transition-colors">
+                <div class="flex gap-4">
+                    <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center shadow-sm shrink-0 bg-white">
+                        <!-- Google Logo SVG -->
+                        <svg viewBox="0 0 24 24" class="w-7 h-7">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 pt-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-xl font-semibold tracking-tight text-gray-900 leading-none">UI/UX Designer</h4>
+                            <button class="text-blue-600">
+                                <i data-lucide="bookmark" stroke-width="1.5" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-500 text-base mt-2">Google LLC</p>
+                    </div>
+                </div>
+                
+                <div class="h-px bg-gray-100 w-full my-5"></div>
+                
+                <div class="pl-[4.5rem]">
+                    <p class="text-gray-600 text-base">California, United States</p>
+                    <p class="text-blue-600 text-lg font-semibold tracking-tight mt-1.5">$10,000 - $25,000 <span class="text-base font-normal">/month</span></p>
+                    <div class="flex gap-2.5 mt-4">
+                        <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Full Time</span>
+                        <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Onsite</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Jobs Section -->
+            <div class="mt-10 flex justify-between items-center">
+                <h3 class="text-[1.35rem] font-semibold tracking-tight text-gray-900">Recent Jobs</h3>
+                <a href="#" class="text-blue-600 text-base font-medium hover:underline">See All</a>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex gap-3 overflow-x-auto mt-5 hide-scrollbar -mx-6 px-6">
+                <button class="bg-blue-600 text-white border-2 border-blue-600 px-6 py-2 rounded-full text-base font-medium whitespace-nowrap">All</button>
+                <button class="text-blue-600 border-2 border-blue-600 px-6 py-2 rounded-full text-base font-medium whitespace-nowrap hover:bg-blue-50 transition-colors">Design</button>
+                <button class="text-blue-600 border-2 border-blue-600 px-6 py-2 rounded-full text-base font-medium whitespace-nowrap hover:bg-blue-50 transition-colors">Technology</button>
+                <button class="text-blue-600 border-2 border-blue-600 px-6 py-2 rounded-full text-base font-medium whitespace-nowrap hover:bg-blue-50 transition-colors">Finance</button>
+            </div>
+
+            <!-- Recent Jobs List -->
+            <div class="mt-6 flex flex-col gap-4">
+                
+                <!-- Card 1: Paypal -->
+                <div class="border border-gray-100 rounded-3xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] bg-white hover:border-gray-200 transition-colors">
+                    <div class="flex gap-4">
+                        <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center shadow-sm shrink-0 bg-white">
+                            <!-- Paypal Logo SVG -->
+                            <svg viewBox="0 0 24 24" class="w-7 h-7">
+                                <path fill="#003087" d="M19.34 7.6c-.23-1.68-1.55-2.61-3.68-2.61H9.84c-.38 0-.71.28-.77.66L7.22 17.5c-.04.22.13.43.36.43h2.9l.71-4.49c.06-.38.39-.66.77-.66h1.76c2.75 0 4.88-1.12 5.34-4.28.16-1.11.02-2.02-.37-2.6z"/>
+                                <path fill="#0079C1" d="M18.82 8.52c-.17 1.25-.94 2.1-2.02 2.65-.89.46-2.05.65-3.32.65h-1.8c-.38 0-.71.28-.77.66l-1.09 6.89c-.04.22.13.43.36.43h2.64c.38 0 .71-.28.77-.66l.46-2.91c.06-.38.39-.66.77-.66h1.37c2.58 0 4.58-1.06 5.01-4.02.19-1.32.02-2.39-.49-3.03z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-lg font-semibold tracking-tight text-gray-900 leading-none">Sales & Marketing</h4>
+                                <button class="text-blue-600">
+                                    <i data-lucide="bookmark" stroke-width="1.5" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-500 text-base mt-2">Paypal</p>
+                        </div>
+                    </div>
+                    <div class="h-px bg-gray-100 w-full my-5"></div>
+                    <div class="pl-[4.5rem]">
+                        <p class="text-gray-600 text-base">New York, United States</p>
+                        <p class="text-blue-600 text-[1.1rem] font-semibold tracking-tight mt-1.5">$8,000 - $20,000 <span class="text-base font-normal">/month</span></p>
+                        <div class="flex gap-2.5 mt-4">
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Full Time</span>
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Remote</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Pinterest -->
+                <div class="border border-gray-100 rounded-3xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] bg-white hover:border-gray-200 transition-colors">
+                    <div class="flex gap-4">
+                        <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center shadow-sm shrink-0 bg-white">
+                            <!-- Pinterest Logo SVG -->
+                            <svg viewBox="0 0 24 24" class="w-8 h-8">
+                                <path fill="#E60023" d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.42 7.62 11.18-.1-.94-.2-2.38.04-3.41.22-.92 1.4-5.92 1.4-5.92s-.36-.72-.36-1.78c0-1.66.96-2.9 2.16-2.9 1.02 0 1.51.76 1.51 1.68 0 1.02-.65 2.56-.99 3.98-.28 1.19.6 2.16 1.77 2.16 2.13 0 3.76-2.25 3.76-5.5 0-2.87-2.07-4.88-5.01-4.88-3.41 0-5.42 2.56-5.42 5.21 0 1.02.39 2.12.88 2.71.1.12.11.23.08.35-.09.38-.3.1.22-.38.29-.11.27-.24.23-.48-.63-1.84-2.86-1.92-3.83-1.92-2.53 0-4.66 2.07-4.66 5.01 0 3.39 2.25 5.51 5.48 5.51 3.51 0 6.01-2.58 6.01-6.32 0-3.36-2.42-5.71-5.71-5.71z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-lg font-semibold tracking-tight text-gray-900 leading-none">Writing & Content</h4>
+                                <button class="text-blue-600">
+                                    <i data-lucide="bookmark" stroke-width="1.5" class="w-6 h-6 fill-blue-600"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-500 text-base mt-2">Pinterest</p>
+                        </div>
+                    </div>
+                    <div class="h-px bg-gray-100 w-full my-5"></div>
+                    <div class="pl-[4.5rem]">
+                        <p class="text-gray-600 text-base">Paris, France</p>
+                        <p class="text-blue-600 text-[1.1rem] font-semibold tracking-tight mt-1.5">$5,000 - $15,000 <span class="text-base font-normal">/month</span></p>
+                        <div class="flex gap-2.5 mt-4">
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Part Time</span>
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Onsite</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Apple -->
+                <div class="border border-gray-100 rounded-3xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] bg-white hover:border-gray-200 transition-colors">
+                    <div class="flex gap-4">
+                        <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center shadow-sm shrink-0 bg-white">
+                            <!-- Apple Logo SVG -->
+                            <svg viewBox="0 0 24 24" class="w-6 h-6">
+                                <path fill="#000000" d="M12 2c1.5 0 2.7 1.2 2.7 2.7h-2.7V2zm5.8 17.5c-1.2.9-2.6 1.6-4.2 1.6s-3-.7-4.2-1.6C7.5 18 6.2 15.5 6.2 12c0-4.5 3-7.5 7.5-7.5s7.5 3 7.5 7.5c0 3.5-1.3 6-3.4 7.5zM13.7 4.7C15.2 4.7 16.5 6 16.5 7.5H13.7V4.7z"/>
+                                <!-- Replacing simple path with better apple approximation for accuracy -->
+                                <path fill="#000000" d="M15.42 16.89c-.68.96-1.4 1.94-2.45 1.96-1.03.02-1.37-.61-2.54-.61-1.18 0-1.56.59-2.56.63-1.03.04-1.85-1.06-2.54-2.04-1.41-2.04-2.49-5.75-1.76-8.24.36-1.24 1.34-2.04 2.45-2.06 1.01-.02 1.96.67 2.58.67.61 0 1.76-.84 2.96-.71 1.01.11 1.93.41 2.54 1.15-.08.06-1.52.88-1.51 2.63.02 2.08 1.83 2.77 1.85 2.78-.02.04-.28.97-.98 1.99zM12.91 3.49c.56-.67.93-1.61.82-2.54-.81.03-1.8.54-2.37 1.21-.51.58-.94 1.54-.83 2.46.91.07 1.81-.46 2.38-1.13z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-lg font-semibold tracking-tight text-gray-900 leading-none">Business Analyst</h4>
+                                <button class="text-blue-600">
+                                    <i data-lucide="bookmark" stroke-width="1.5" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-500 text-base mt-2">Apple Inc.</p>
+                        </div>
+                    </div>
+                    <div class="h-px bg-gray-100 w-full my-5"></div>
+                    <div class="pl-[4.5rem]">
+                        <p class="text-gray-600 text-base">Chicago, United States</p>
+                        <p class="text-blue-600 text-[1.1rem] font-semibold tracking-tight mt-1.5">$5,000 - $12,000 <span class="text-base font-normal">/month</span></p>
+                        <div class="flex gap-2.5 mt-4">
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Freelance</span>
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Remote</span>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Card 4: Spotify -->
+                 <div class="border border-gray-100 rounded-3xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] bg-white hover:border-gray-200 transition-colors">
+                    <div class="flex gap-4">
+                        <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center shadow-sm shrink-0 bg-white">
+                            <!-- Spotify Logo SVG -->
+                            <svg viewBox="0 0 24 24" class="w-8 h-8">
+                                <path fill="#1DB954" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.494 17.29c-.22.361-.689.475-1.05.253-2.879-1.758-6.502-2.155-10.763-1.18-.426.097-.849-.168-.946-.593-.097-.425.168-.849.593-.946 4.665-1.066 8.685-.623 11.913 1.344.361.22.475.689.253 1.05zm1.492-3.328c-.276.449-.861.594-1.311.318-3.297-2.025-8.336-2.613-11.854-1.429-.512.173-1.074-.103-1.246-.615-.173-.512.103-1.074.615-1.246 4.027-1.353 9.585-.693 13.385 1.649.449.277.594.862.318 1.311h-.007zm.135-3.483C15.19 8.14 8.814 7.93 5.143 9.044c-.604.183-1.241-.157-1.425-.761-.183-.604.157-1.241.761-1.425 4.209-1.275 11.231-1.031 15.688 1.613.541.321.718 1.02.397 1.562-.32.542-1.02.719-1.562.397L19.12 10.48v-.001z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-lg font-semibold tracking-tight text-gray-900 leading-none">Quality Assurance</h4>
+                                <button class="text-blue-600">
+                                    <i data-lucide="bookmark" stroke-width="1.5" class="w-6 h-6 fill-blue-600"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-500 text-base mt-2">Spotify</p>
+                        </div>
+                    </div>
+                    <div class="h-px bg-gray-100 w-full my-5"></div>
+                    <div class="pl-[4.5rem]">
+                        <p class="text-gray-600 text-base">Canberra, Australia</p>
+                        <p class="text-blue-600 text-[1.1rem] font-semibold tracking-tight mt-1.5">$12,000 - $25,000 <span class="text-base font-normal">/month</span></p>
+                        <div class="flex gap-2.5 mt-4">
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Full Time</span>
+                            <span class="border border-gray-300 text-gray-600 px-3 py-1 rounded-lg text-sm font-medium">Onsite</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Reddit -->
+                <div class="border border-gray-100 rounded-3xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] bg-white hover:border-gray-200 transition-colors">
+                    <div class="flex gap-4">
+                        <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center shadow-sm shrink-0 bg-white">
+                            <!-- Reddit Logo SVG -->
+                            <svg viewBox="0 0 24 24" class="w-8 h-8">
+                                <circle cx="12" cy="12" r="12" fill="#FF4500" />
+                                <path fill="#FFF" d="M16.5 12.5c0-.83-.67-1.5-1.5-1.5-.4 0-.76.16-1.02.41-1.05-.69-2.45-1.12-3.98-1.16l.85-2.65 2.26.54c.05.7.63 1.26 1.34 1.26.74 0 1.35-.61 1.35-1.35 0-.74-.61-1.35-1.35-1.35-.55 0-1.02.33-1.22.8l-2.47-.59c-.1-.02-.21.03-.25.13l-.95 2.94c-1.56.03-2.98.48-4.04 1.18-.26-.26-.62-.43-1.02-.43-.83 0-1.5.67-1.5 1.5 0 .61.36 1.13.88 1.36-.03.15-.05.31-.05.47 0 2.48 2.54 4.5 5.67 4.5s5.67-2.02 5.67-4.5c0-.16-.02-.32-.05-.47.52-.23.88-.75.88-1.36zm-7.25 1.5c.61 0 1.1.49 1.1 1.1 0 .61-.49 1.1-1.1 1.1-.61 0-1.1-.49-1.1-1.1 0-.61.49-1.1 1.1-1.1zm4.72 2.89c-.64.64-1.74.68-1.97.68-.23 0-1.33-.04-1.97-.68-.14-.14-.14-.38 0-.53.15-.15.38-.15.53 0 .42.42 1.09.46 1.44.46.35 0 1.02-.04 1.44-.46.15-.15.38-.15.53 0 .15.15.15.39 0 .53zm-.22-1.79c-.61 0-1.1-.49-1.1-1.1 0-.61.49-1.1 1.1-1.1.61 0 1.1.49 1.1 1.1 0 .61-.49 1.1-1.1 1.1z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-lg font-semibold tracking-tight text-gray-900 leading-none">Community Officer</h4>
+                                <button class="text-blue-600">
+                                    <i data-lucide="bookmark" stroke-width="1.5" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-500 text-base mt-2">Reddit Company</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 px-6 py-3 flex justify-between items-center pb-8 z-50">
+            <button class="flex flex-col items-center gap-1.5 text-blue-600 w-16">
+                <i data-lucide="home" stroke-width="2" class="w-[1.35rem] h-[1.35rem] fill-blue-600"></i>
+                <span class="text-xs font-semibold">Home</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors w-16">
+                <i data-lucide="bookmark" stroke-width="1.5" class="w-[1.35rem] h-[1.35rem]"></i>
+                <span class="text-xs font-medium">Saved Jobs</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors w-16">
+                <i data-lucide="briefcase" stroke-width="1.5" class="w-[1.35rem] h-[1.35rem]"></i>
+                <span class="text-xs font-medium">Applicatio...</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors w-16">
+                <i data-lucide="message-circle" stroke-width="1.5" class="w-[1.35rem] h-[1.35rem]"></i>
+                <span class="text-xs font-medium">Message</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors w-16">
+                <i data-lucide="user" stroke-width="1.5" class="w-[1.35rem] h-[1.35rem]"></i>
+                <span class="text-xs font-medium">Profile</span>
+            </button>
+        </div>
+        
+        <!-- Home Indicator (iOS styling detail) -->
+        <div class="fixed bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-200 rounded-full z-50"></div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
