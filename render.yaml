@@ -23,7 +23,6 @@ services:
   - type: web
     name: ish-top-frontend
     runtime: static
-    region: frankfurt
     buildCommand: "cd frontend && npm install && npm run build"
     staticPublishPath: "./frontend/dist"
     envVars:
