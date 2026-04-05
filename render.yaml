@@ -1,0 +1,43 @@
+services:
+  # Backend FastAPI Service
+  - type: web
+    name: ish-top-backend
+    runtime: python
+    env: python
+    region: frankfurt
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    preDeployCommand: "cd backend && alembic upgrade head"
+    startCommand: "cd backend && gunicorn -k uvicorn.workers.UvicornWorker app.main:app"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ish-top-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      # Введите TELEGRAM_BOT_TOKEN вручную в панели Render Dashboard
+
+  # Frontend Static Service
+  - type: web
+    name: ish-top-frontend
+    runtime: static
+    region: frankfurt
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: "./frontend/dist"
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: ish-top-backend
+          property: host
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html"
+
+databases:
+  - name: ish-top-db
+    plan: free
+    region: frankfurt

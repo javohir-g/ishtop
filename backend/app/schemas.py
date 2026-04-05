@@ -138,6 +138,7 @@ class VacancyOut(BaseModel):
     views_count: int
     applications_count: int
     is_featured: bool
+    is_favorite: bool = False
     published_at: Optional[datetime] = None
     created_at: datetime
 
@@ -306,6 +307,11 @@ class ChatOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PublicStatsOut(BaseModel):
+    vacancies_count: int
+    workers_count: int
+    kindergartens_count: int
 
 
 

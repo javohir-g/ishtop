@@ -148,48 +148,4 @@ async def telegram_widget_auth(
     )
 
 
-@router.post("/dev-token", response_model=TokenResponse)
-async def dev_token(
-    telegram_id: int,
-    role: str = "job_seeker",
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    DEV ONLY: Generate a token without Telegram validation.
-    Remove this endpoint in production!
-    """
-    result = await db.execute(select(User).where(User.telegram_id == telegram_id))
-    user = result.scalar_one_or_none()
-
-    is_new_user = False
-    try:
-        requested_role = UserRole(role)
-    except ValueError:
-        requested_role = UserRole.JOB_SEEKER
-
-    if user is None:
-        user = User(
-            telegram_id=telegram_id,
-            username=f"dev_user_{telegram_id}",
-            first_name="Dev",
-            last_name="User",
-            role=requested_role,
-        )
-        db.add(user)
-        await db.commit()
-        await db.refresh(user)
-        is_new_user = True
-    else:
-        # Update role for existing user in DEV mode
-        if user.role != requested_role:
-            user.role = requested_role
-            await db.commit()
-            await db.refresh(user)
-
-    access_token = create_access_token(data={"sub": str(user.id)}) # Ensure string for consistency with auth.py payload get
-    return TokenResponse(
-        access_token=access_token,
-        user_id=user.id,
-        role=user.role.value,
-        is_new_user=is_new_user,
-    )
+# dev-token removed for production security

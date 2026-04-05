@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "@/app/i18n/useTranslation";
 import { useApi, useApiMutation } from "@/hooks/useApi";
 import api from "@/services/api";
+import { toast } from "sonner";
 
 interface Candidate {
   id: number;
@@ -49,15 +50,15 @@ export function KindergartenHome() {
 
   const handleInvite = async () => {
     if (!selectedCandidate || !selectedVacancyId) {
-       alert("Выберите вакансию");
+       toast.error("Выберите вакансию");
        return;
     }
     try {
       await inviteWorker({ workerId: selectedCandidate.id, vacancyId: Number(selectedVacancyId) });
-      alert("Приглашение отправлено!");
+      toast.success("Приглашение отправлено!");
       setShowInviteModal(false);
     } catch (err: any) {
-      alert("Ошибка: " + (err.response?.data?.detail || err.message));
+      toast.error("Ошибка: " + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -79,7 +80,7 @@ export function KindergartenHome() {
               placeholder="Поиск по имени или должности..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && fetchWorkers()}
+              onKeyDown={(e) => e.key === 'Enter' && fetchWorkers()}
               className="w-full h-12 pl-12 pr-4 bg-gray-50 rounded-xl text-sm border border-gray-100 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
             />
           </div>

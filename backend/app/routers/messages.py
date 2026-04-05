@@ -132,3 +132,42 @@ async def mark_chat_as_read(
     )
     await db.commit()
     return None
+
+@router.get("/{chat_id}/metadata", response_model=ChatOut)
+async def get_chat_metadata(
+    chat_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get metadata for a specific chat (other party info, etc.)."""
+    query = select(Chat).where(Chat.id == chat_id).options(
+        selectinload(Chat.job_seeker),
+        selectinload(Chat.kindergarten)
+    )
+    result = await db.execute(query)
+    chat = result.scalar_one_or_none()
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+        
+    # Verify ownership
+    if current_user.role == UserRole.JOB_SEEKER:
+        prof_res = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+        if chat.job_seeker_id != prof_res.scalar_one_or_none():
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == UserRole.KINDERGARTEN_EMPLOYER:
+        emp_res = await db.execute(select(KindergartenEmployer.kindergarten_id).where(KindergartenEmployer.user_id == current_user.id))
+        if chat.kindergarten_id != emp_res.scalar_one_or_none():
+            raise HTTPException(status_code=403, detail="Access denied")
+
+    # Format response
+    c_dict = chat.__dict__.copy()
+    if current_user.role == UserRole.JOB_SEEKER:
+        c_dict["other_party_name"] = chat.kindergarten.name
+        c_dict["other_party_photo"] = chat.kindergarten.logo_url
+        c_dict["unread_count"] = chat.unread_by_seeker
+    else:
+        c_dict["other_party_name"] = chat.job_seeker.full_name
+        c_dict["other_party_photo"] = chat.job_seeker.photo_url
+        c_dict["unread_count"] = chat.unread_by_employer
+        
+    return c_dict

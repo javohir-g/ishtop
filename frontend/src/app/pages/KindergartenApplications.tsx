@@ -2,7 +2,8 @@ import { useNavigate } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
 import api from "@/services/api";
-import { Star, Clock } from "lucide-react";
+import { Star, Clock, Check, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface Application {
   id: number;
@@ -34,6 +35,19 @@ export function KindergartenApplications() {
   useEffect(() => {
     fetchApplications();
   }, [fetchApplications]);
+
+  const updateStatus = async (e: React.MouseEvent, appId: number, newStatus: string) => {
+    e.stopPropagation();
+    try {
+      await api.patch(`/employer/applications/${appId}/status`, null, { 
+        params: { new_status: newStatus } 
+      });
+      toast.success(`Статус обновлен на: ${mapStatus(newStatus).label}`);
+      fetchApplications();
+    } catch (err: any) {
+      toast.error("Ошибка при обновлении статуса");
+    }
+  };
 
   const filters = [
     { id: "all", label: "Все" },
@@ -130,9 +144,29 @@ export function KindergartenApplications() {
                     <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${statusInfo.color}`}>
                       {statusInfo.label}
                     </span>
-                    <span className="text-xs font-black text-gray-900">
+                    
+                    {app.status === "pending" || app.status === "viewed" ? (
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={(e) => updateStatus(e, app.id, "accepted")}
+                          className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition-colors"
+                          title="Принять"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={(e) => updateStatus(e, app.id, "rejected")}
+                          className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+                          title="Отклонить"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-black text-gray-900">
                         {app.job_seeker.desired_salary_min ? `${app.job_seeker.desired_salary_min.toLocaleString()} сум` : "З/П не указ."}
-                    </span>
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

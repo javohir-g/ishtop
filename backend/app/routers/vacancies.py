@@ -8,11 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy.orm import selectinload, joinedload
 
-from ..auth import get_current_user, require_role
+from ..auth import get_current_user, require_role, get_optional_user
 from ..database import get_db
 from ..models import (
     User, UserRole, Vacancy, VacancyStatus, EmploymentType,
-    KindergartenEmployer, Application, SavedVacancy,
+    KindergartenEmployer, Application, SavedVacancy, JobSeekerProfile
 )
 from ..schemas import VacancyCreate, VacancyOut, VacancyListOut
 
@@ -26,13 +26,23 @@ async def list_vacancies(
     district: Optional[str] = None,
     employment_type: Optional[str] = None,
     search: Optional[str] = None,
+    is_featured: Optional[bool] = None,
+    is_new: Optional[bool] = None,
+    salary_min: Optional[int] = None,
     db: AsyncSession = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """List active vacancies with filtering and pagination."""
     query = select(Vacancy).where(Vacancy.status == VacancyStatus.ACTIVE).options(joinedload(Vacancy.kindergarten))
 
     if district:
         query = query.where(Vacancy.district == district)
+    if is_featured is not None:
+        query = query.where(Vacancy.is_featured == is_featured)
+    if is_new is not None:
+        query = query.where(Vacancy.is_new == is_new)
+    if salary_min:
+        query = query.where(Vacancy.salary_min >= salary_min)
     if employment_type:
         try:
             et = EmploymentType(employment_type)
@@ -54,11 +64,29 @@ async def list_vacancies(
     result = await db.execute(query)
     vacancies = result.scalars().all()
 
+    # Populate is_favorite if user is a job seeker
+    if current_user and current_user.role == UserRole.JOB_SEEKER:
+        # Get seeker profile
+        profile_res = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+        profile_id = profile_res.scalar()
+        
+        if profile_id:
+            # Get favorite IDs for this user
+            fav_res = await db.execute(
+                select(SavedVacancy.vacancy_id).where(SavedVacancy.job_seeker_id == profile_id)
+            )
+            fav_ids = set(fav_res.scalars().all())
+            for v in vacancies:
+                v.is_favorite = v.id in fav_ids
+
     return VacancyListOut(items=vacancies, total=total, page=page, per_page=per_page)
 
-
 @router.get("/{vacancy_id}", response_model=VacancyOut)
-async def get_vacancy(vacancy_id: int, db: AsyncSession = Depends(get_db)):
+async def get_vacancy(
+    vacancy_id: int, 
+    db: AsyncSession = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
     """Get a single vacancy by ID."""
     result = await db.execute(
         select(Vacancy)
@@ -68,6 +96,18 @@ async def get_vacancy(vacancy_id: int, db: AsyncSession = Depends(get_db)):
     vacancy = result.scalar_one_or_none()
     if not vacancy:
         raise HTTPException(status_code=404, detail="Vacancy not found")
+
+    # Check is_favorite
+    if current_user and current_user.role == UserRole.JOB_SEEKER:
+        profile_res = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+        profile_id = profile_res.scalar()
+        if profile_id:
+            fav_res = await db.execute(
+                select(SavedVacancy.id).where(
+                    and_(SavedVacancy.job_seeker_id == profile_id, SavedVacancy.vacancy_id == vacancy_id)
+                )
+            )
+            vacancy.is_favorite = fav_res.scalar() is not None
 
     # Increment views
     vacancy.views_count += 1

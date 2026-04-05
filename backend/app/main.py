@@ -11,6 +11,7 @@ from .routers.employer import router as employer_router
 from .routers.favorites import router as favorites_router
 from .routers.messages import router as messages_router
 from .routers.admin import router as admin_router
+from .routers.stats import router as stats_router
 
 app = FastAPI(
     title="Ish-Top API",
@@ -36,6 +37,7 @@ app.include_router(workers_router, prefix="/api/v1")
 app.include_router(favorites_router, prefix="/api/v1")
 app.include_router(messages_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(stats_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
 
 @app.get("/")

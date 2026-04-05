@@ -26,6 +26,15 @@ export function Applications() {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState("all");
 
+  const statusMap: Record<string, { label: string, color: string }> = {
+    pending: { label: "На рассмотрении", color: "bg-yellow-50 text-yellow-700 border-yellow-100" },
+    viewed: { label: "Просмотрено", color: "bg-blue-50 text-blue-700 border-blue-100" },
+    shortlisted: { label: "В шорт-листе", color: "bg-purple-50 text-purple-700 border-purple-100" },
+    accepted: { label: "Принято", color: "bg-green-50 text-green-700 border-green-100" },
+    rejected: { label: "Отклонено", color: "bg-red-50 text-red-700 border-red-100" },
+    withdrawn: { label: "Отозвано", color: "bg-gray-50 text-gray-700 border-gray-100" },
+  };
+
   const fetchFunc = useCallback(() => api.get("/applications/my"), []);
   const { data: apps, loading, error, execute: fetchApps } = useApi<BackendApplication[]>(fetchFunc);
 
@@ -34,10 +43,10 @@ export function Applications() {
   }, [fetchApps]);
 
   const filters = [
-    { id: "all", labelKey: "all" as const },
+    { id: "all", label: "Все" },
     { id: "pending", label: "На рассмотрении" },
-    { id: "accepted", label: "Принята" },
-    { id: "rejected", labelKey: "rejected" as const },
+    { id: "accepted", label: "Принято" },
+    { id: "rejected", label: "Отклонено" },
   ];
 
   const filteredApplications = apps?.filter(app => {
@@ -52,17 +61,8 @@ export function Applications() {
     return "Зарплата не указана";
   };
 
-  const getStatusStyles = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'accepted':
-        return "bg-green-50 text-green-600 border-green-100";
-      case 'rejected':
-        return "bg-red-50 text-red-600 border-red-100";
-      case 'pending':
-        return "bg-yellow-50 text-yellow-600 border-yellow-100";
-      default:
-        return "bg-blue-50 text-blue-600 border-blue-100";
-    }
+  const getStatusInfo = (status: string) => {
+    return statusMap[status.toLowerCase()] || { label: status, color: "bg-gray-50 text-gray-600 border-gray-100" };
   };
 
   return (
@@ -88,7 +88,7 @@ export function Applications() {
                   : "bg-gray-100 text-gray-700"
               } px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors`}
             >
-              {'label' in filter ? filter.label : t(filter.labelKey)}
+              {filter.label}
             </button>
           ))}
         </div>
@@ -119,9 +119,9 @@ export function Applications() {
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-gray-50">
               <span
-                className={`inline-block px-3 py-1 rounded-lg text-xs font-medium border ${getStatusStyles(app.status)}`}
+                className={`inline-block px-3 py-1 rounded-lg text-[10px] uppercase font-bold border ${getStatusInfo(app.status).color}`}
               >
-                {app.status}
+                {getStatusInfo(app.status).label}
               </span>
               <span className="text-xs text-gray-500">
                 {new Date(app.created_at).toLocaleDateString('ru-RU')}

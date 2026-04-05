@@ -16,6 +16,7 @@ import { useNavigate, useParams } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { useApi, useApiMutation } from "@/hooks/useApi";
 import api from "@/services/api";
+import { toast } from "sonner";
 
 interface Skill {
   id: number;
@@ -83,10 +84,10 @@ export function CandidateDetail() {
     if (!candidate || !selectedVacancyId) return;
     try {
       await inviteWorker({ workerId: candidate.id, vacancyId: Number(selectedVacancyId) });
-      alert("Приглашение отправлено!");
+      toast.success("Приглашение отправлено!");
       setShowInviteModal(false);
     } catch (err: any) {
-      alert("Ошибка: " + (err.response?.data?.detail || err.message));
+      toast.error("Ошибка: " + (err.response?.data?.detail || err.message));
     }
   };
 

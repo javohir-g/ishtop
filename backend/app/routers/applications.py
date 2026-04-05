@@ -89,3 +89,35 @@ async def my_applications(
         .order_by(Application.created_at.desc())
     )
     return result.scalars().all()
+
+
+@router.get("/{application_id}", response_model=ApplicationOut)
+async def get_application_detail(
+    application_id: int,
+    current_user: User = Depends(require_role(UserRole.JOB_SEEKER)),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get detailed application info for a specific application (seeker side)."""
+    # Get job seeker profile
+    result = await db.execute(
+        select(JobSeekerProfile).where(JobSeekerProfile.user_id == current_user.id)
+    )
+    profile = result.scalar_one_or_none()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    result = await db.execute(
+        select(Application)
+        .where(
+            and_(
+                Application.id == application_id,
+                Application.job_seeker_id == profile.id
+            )
+        )
+        .options(joinedload(Application.vacancy).joinedload(Vacancy.kindergarten))
+    )
+    application = result.scalar_one_or_none()
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found or access denied")
+    
+    return application

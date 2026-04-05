@@ -1,16 +1,88 @@
 import { IconSearch, IconMapPin, IconAdjustments, IconBookmark, IconArrowLeft, IconBriefcase } from "@tabler/icons-react";
 import { useNavigate } from "react-router";
-import { useState } from "react";
-// MOCK DATA - Replace with API call when integrating backend
-import { MOCK_VACANCIES } from "../../data/mockData";
+import { useState, useCallback, useEffect } from "react";
+import { useApi } from "@/hooks/useApi";
+import api from "@/services/api";
+import { ApplyModal } from "@/app/components/ApplyModal";
+import { toast } from "sonner";
+
+interface Vacancy {
+  id: number;
+  title: string;
+  kindergarten?: { 
+    name: string;
+    is_verified: boolean;
+  };
+  district: string;
+  salary_min?: number;
+  salary_max?: number;
+  employment_type: string;
+  published_at?: string;
+  is_featured?: boolean;
+  is_favorite?: boolean;
+}
 
 export function Vacancies() {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
+  
+  // Filter States
+  const [search, setSearch] = useState("");
+  const [district, setDistrict] = useState("");
+  const [salaryMin, setSalaryMin] = useState<number | "">("");
+  const [sortBy, setSortBy] = useState("new");
 
-  // MOCK DATA - Replace with API call: GET /api/vacancies
-  // TODO: Implement: const { data: vacancies, loading, error } = useFetch('/api/vacancies')
-  const vacancies = MOCK_VACANCIES;
+  const fetchVacanciesFunc = useCallback(() => {
+    const params: any = {
+      search: search || undefined,
+      district: district || undefined,
+      salary_min: salaryMin || undefined,
+    };
+    
+    if (sortBy === "recommended") params.is_featured = true;
+    if (sortBy === "new") params.is_new = true;
+
+    return api.get("/vacancies", { params });
+  }, [search, district, salaryMin, sortBy]);
+
+  const { data: vacancyResponse, loading, execute: fetchVacancies } = useApi<{ items: Vacancy[] }>(fetchVacanciesFunc);
+
+  useEffect(() => {
+    fetchVacancies();
+  }, [fetchVacancies]);
+
+  const vacancies = vacancyResponse?.items || [];
+
+  const formatSalary = (min?: number, max?: number) => {
+    if (!min && !max) return "З/П не указана";
+    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} сум`;
+    if (min) return `от ${min.toLocaleString()} сум`;
+    if (max) return `до ${max.toLocaleString()} сум`;
+    return "З/П не указана";
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "Недавно";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+  };
+
+  const toggleFavorite = async (e: React.MouseEvent, job: Vacancy) => {
+    e.stopPropagation();
+    try {
+      if (job.is_favorite) {
+        await api.delete(`/favorites/${job.id}`);
+      } else {
+        await api.post(`/favorites`, null, { params: { vacancy_id: job.id } });
+      }
+      // Refresh list
+      fetchVacancies();
+    } catch (err: any) {
+      toast.error("Ошибка при обновлении избранного: " + (err.response?.data?.detail || err.message));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,6 +113,8 @@ export function Vacancies() {
             <input
               type="text"
               placeholder="Поиск по должности или садику..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
@@ -75,13 +149,17 @@ export function Vacancies() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Район
                   </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Все районы</option>
-                    <option>Центральный</option>
-                    <option>Северный</option>
-                    <option>Южный</option>
-                    <option>Западный</option>
-                    <option>Восточный</option>
+                  <select 
+                    value={district}
+                    onChange={(e) => setDistrict(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Все районы</option>
+                    <option value="Мирзо-Улугбекский">Мирзо-Улугбекский</option>
+                    <option value="Юнусабадский">Юнусабадский</option>
+                    <option value="Чиланзарский">Чиланзарский</option>
+                    <option value="Яшнабадский">Яшнабадский</option>
+                    <option value="Мирабадский">Мирабадский</option>
                   </select>
                 </div>
 
@@ -91,43 +169,35 @@ export function Vacancies() {
                   </label>
                   <input
                     type="number"
-                    placeholder="30 000"
+                    placeholder="3 000 000"
+                    value={salaryMin}
+                    onChange={(e) => setSalaryMin(e.target.value === "" ? "" : Number(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    График
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">Полный день</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">Неполный день</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">Гибкий график</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Сортировка
                   </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Новые</option>
-                    <option>По зарплате</option>
-                    <option>Рекомендованные</option>
+                  <select 
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="new">Новые</option>
+                    <option value="salary">По зарплате</option>
+                    <option value="recommended">Рекомендованные</option>
                   </select>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <button 
+                  onClick={() => {
+                    fetchVacancies();
+                    setShowFilters(false);
+                  }}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
                   Применить
                 </button>
               </div>
@@ -137,30 +207,42 @@ export function Vacancies() {
           {/* Vacancies List */}
           <div className="md:col-span-3 space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-gray-600">Найдено {vacancies.length} вакансий</p>
+              <p className="text-gray-600">
+                {loading ? "Поиск вакансий..." : `Найдено ${vacancies.length} вакансий`}
+              </p>
             </div>
 
-            {vacancies.map((vacancy) => (
+            {loading && vacancies.length === 0 ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div className="h-4 bg-gray-100 rounded w-1/4 mb-4"></div>
+                    <div className="h-10 bg-gray-50 rounded mt-4"></div>
+                  </div>
+                ))}
+              </div>
+            ) : vacancies.map((vacancy) => (
               <div
                 key={vacancy.id}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group"
                 onClick={() => navigate(`/job/${vacancy.id}`)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-600">
+                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                         {vacancy.title}
                       </h3>
-                      {vacancy.badge && (
-                        <span className={`${vacancy.badgeColor} text-white text-xs font-bold px-2 py-1 rounded`}>
-                          {vacancy.badge}
+                      {vacancy.is_featured && (
+                        <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
+                          ТОП
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3 flex-wrap">
-                      <p className="text-gray-700">{vacancy.kindergarten}</p>
-                      {vacancy.verified && (
+                      <p className="text-gray-700">{vacancy.kindergarten?.name || "Детский сад"}</p>
+                      {vacancy.kindergarten?.is_verified && (
                         <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
                           ✓ Проверено
                         </span>
@@ -168,10 +250,13 @@ export function Vacancies() {
                     </div>
                   </div>
                   <button 
-                    className="text-gray-400 hover:text-blue-600 transition-colors"
-                    onClick={(e) => e.stopPropagation()}
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-90"
+                    onClick={(e) => toggleFavorite(e, vacancy)}
                   >
-                    <IconBookmark className="w-6 h-6" stroke={2} />
+                    <IconBookmark 
+                      className={`w-6 h-6 ${vacancy.is_favorite ? "text-blue-600 fill-blue-600" : "text-gray-400"}`} 
+                      stroke={2} 
+                    />
                   </button>
                 </div>
 
@@ -182,13 +267,15 @@ export function Vacancies() {
                   </div>
                   <div className="flex items-center gap-1">
                     <IconBriefcase className="w-4 h-4" stroke={2} />
-                    {vacancy.type}
+                    {vacancy.employment_type === "full_time" ? "Полная занятость" : "Частичная занятость"}
                   </div>
-                  <span>{vacancy.posted}</span>
+                  <span>{formatDate(vacancy.published_at)}</span>
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <span className="text-xl font-bold text-blue-600">{vacancy.salary}</span>
+                  <span className="text-xl font-bold text-blue-600">
+                    {formatSalary(vacancy.salary_min, vacancy.salary_max)}
+                  </span>
                   <div className="flex gap-2">
                     <button
                       onClick={(e) => {
@@ -199,8 +286,12 @@ export function Vacancies() {
                     >
                       Открыть
                     </button>
-                    <button 
-                      onClick={(e) => e.stopPropagation()}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedVacancy(vacancy);
+                        setShowApplyModal(true);
+                      }}
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                     >
                       Откликнуться
@@ -210,27 +301,34 @@ export function Vacancies() {
               </div>
             ))}
 
-            {/* Pagination */}
-            <div className="flex justify-center gap-2 pt-8">
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                Назад
-              </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                1
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                2
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                3
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                Вперед
-              </button>
-            </div>
+            {/* Pagination Component Placeholder */}
+            {!loading && vacancies.length > 0 && (
+              <div className="flex justify-center gap-2 pt-8">
+                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Назад</button>
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">1</button>
+                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Вперед</button>
+              </div>
+            )}
+            
+            {!loading && vacancies.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+                <p className="text-gray-500">По вашему запросу вакансий не найдено. Попробуйте изменить фильтры.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Apply Modal */}
+      {selectedVacancy && (
+        <ApplyModal
+          isOpen={showApplyModal}
+          onClose={() => setShowApplyModal(false)}
+          vacancyId={selectedVacancy.id}
+          vacancyTitle={selectedVacancy.title}
+          kindergartenName={selectedVacancy.kindergarten?.name || "Детский сад"}
+        />
+      )}
     </div>
   );
 }

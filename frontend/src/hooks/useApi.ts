@@ -34,7 +34,7 @@ export function useApiMutation<T>(apiFunc: (...args: any[]) => Promise<any>) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const mutate = useCallback(async (...args: any[]) => {
+  const execute = useCallback(async (...args: any[]) => {
     setLoading(true);
     setError(null);
     try {
@@ -49,5 +49,5 @@ export function useApiMutation<T>(apiFunc: (...args: any[]) => Promise<any>) {
     }
   }, [apiFunc]);
 
-  return { mutate, loading, error };
+  return { execute, loading, error };
 }

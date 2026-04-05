@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useApi, useApiMutation } from "@/hooks/useApi";
 import api from "@/services/api";
+import { toast } from "sonner";
 
 interface Message {
   id: number;
@@ -11,6 +12,12 @@ interface Message {
   content: string;
   is_read: boolean;
   created_at: string;
+}
+
+interface ChatMetadata {
+  id: number;
+  other_party_name: string;
+  other_party_photo?: string;
 }
 
 interface User {
@@ -27,6 +34,9 @@ export function ChatDetail() {
   const fetchMessagesFunc = useCallback(() => api.get(`/chats/${chatId}`), [chatId]);
   const { data: messages, execute: fetchMessages } = useApi<Message[]>(fetchMessagesFunc);
 
+  const fetchChatMetadataFunc = useCallback(() => api.get(`/chats/${chatId}/metadata`), [chatId]);
+  const { data: chatMetadata, execute: fetchChatMetadata } = useApi<ChatMetadata>(fetchChatMetadataFunc);
+
   const fetchMeFunc = useCallback(() => api.get("/auth/me"), []);
   const { data: me } = useApi<User>(fetchMeFunc);
 
@@ -40,6 +50,7 @@ export function ChatDetail() {
 
   useEffect(() => {
     fetchMessages();
+    fetchChatMetadata();
     api.get("/auth/me"); // Load me if not already loaded
     
     // Mark as read
@@ -63,7 +74,7 @@ export function ChatDetail() {
       setMessageText("");
       fetchMessages();
     } catch (err: any) {
-      alert("Ошибка при отправке: " + (err.response?.data?.detail || err.message));
+      toast.error("Ошибка при отправке: " + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -82,7 +93,25 @@ export function ChatDetail() {
           >
             <IconArrowLeft className="w-6 h-6 text-gray-900" strokeWidth={2} />
           </button>
-          <h1 className="text-xl font-bold text-gray-900">Чат #{chatId}</h1>
+          <div className="flex items-center gap-3">
+            {chatMetadata?.other_party_photo ? (
+              <img 
+                src={chatMetadata.other_party_photo} 
+                alt={chatMetadata.other_party_name} 
+                className="w-10 h-10 rounded-full bg-gray-100 object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                {chatMetadata?.other_party_name?.charAt(0) || "?"}
+              </div>
+            )}
+            <div>
+              <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
+                {chatMetadata?.other_party_name || `Чат #${chatId}`}
+              </h1>
+              <p className="text-[10px] text-green-600 font-semibold uppercase tracking-wider">В сети</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -127,7 +156,7 @@ export function ChatDetail() {
             type="text"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder="Сообщение..."
             className="flex-1 h-12 px-4 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />

@@ -1,16 +1,45 @@
 import { IconSearch, IconMapPin, IconAdjustments, IconStar, IconArrowLeft, IconBriefcase, IconSchool, IconHeart } from "@tabler/icons-react";
 import { useNavigate } from "react-router";
-import { useState } from "react";
-// MOCK DATA - Replace with API call when integrating backend
-import { MOCK_WORKERS } from "../../data/mockData";
+import { useState, useCallback, useEffect } from "react";
+import { useApi } from "@/hooks/useApi";
+import api from "@/services/api";
+
+interface Worker {
+  id: number;
+  full_name: string;
+  photo_url?: string;
+  district?: string;
+  desired_position?: string;
+  experience_years: number;
+  rating: number;
+}
 
 export function Workers() {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Filter States
+  const [search, setSearch] = useState("");
+  const [district, setDistrict] = useState("");
+  const [minExperience, setMinExperience] = useState<number | "">("");
+  const [position, setPosition] = useState("");
 
-  // MOCK DATA - Replace with API call: GET /api/workers
-  // TODO: Implement: const { data: workers, loading, error } = useFetch('/api/workers')
-  const workers = MOCK_WORKERS;
+  const fetchWorkersFunc = useCallback(() => {
+    const params: any = {
+      position: position || undefined,
+      district: district || undefined,
+      min_experience: minExperience || undefined,
+    };
+    if (search) params.search = search; // Though the backend position param might cover this
+
+    return api.get("/workers", { params });
+  }, [position, district, minExperience, search]);
+
+  const { data: workers, loading, execute: fetchWorkers } = useApi<Worker[]>(fetchWorkersFunc);
+
+  useEffect(() => {
+    fetchWorkers();
+  }, [fetchWorkers]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,6 +70,8 @@ export function Workers() {
             <input
               type="text"
               placeholder="Поиск по должности или имени..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
@@ -75,14 +106,17 @@ export function Workers() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Должность
                   </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Все должности</option>
-                    <option>Воспитатель</option>
-                    <option>Логопед</option>
-                    <option>Музыкальный руководитель</option>
-                    <option>Инструктор по физкультуре</option>
-                    <option>Педагог-психолог</option>
-                    <option>Методист</option>
+                  <select 
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Все должности</option>
+                    <option value="Воспитатель">Воспитатель</option>
+                    <option value="Логопед">Логопед</option>
+                    <option value="Музыкальный руководитель">Музыкальный руководитель</option>
+                    <option value="Методист">Методист</option>
+                    <option value="Педагог-психолог">Педагог-психолог</option>
                   </select>
                 </div>
 
@@ -90,88 +124,40 @@ export function Workers() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Район
                   </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Все районы</option>
-                    <option>Центральный</option>
-                    <option>Северный</option>
-                    <option>Южный</option>
-                    <option>Западный</option>
-                    <option>Восточный</option>
+                  <select 
+                    value={district}
+                    onChange={(e) => setDistrict(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Все районы</option>
+                    <option value="Мирзо-Улугбекский">Мирзо-Улугбекский</option>
+                    <option value="Юнусабадский">Юнусабадский</option>
+                    <option value="Чиланзарский">Чиланзарский</option>
+                    <option value="Яшнабадский">Яшнабадский</option>
+                    <option value="Мирабадский">Мирабадский</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Опыт работы
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">До 1 года</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">1-3 года</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">3-5 лет</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700">Более 5 лет</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ожидаемая зарплата до
+                    Опыт от (лет)
                   </label>
                   <input
                     type="number"
-                    placeholder="8 000 000"
+                    placeholder="0"
+                    value={minExperience}
+                    onChange={(e) => setMinExperience(e.target.value === "" ? "" : Number(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Рейтинг
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700 flex items-center gap-1">
-                        <IconStar className="w-4 h-4 text-yellow-400 fill-yellow-400" stroke={0} />
-                        5.0
-                      </span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700 flex items-center gap-1">
-                        <IconStar className="w-4 h-4 text-yellow-400 fill-yellow-400" stroke={0} />
-                        4.5+
-                      </span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                      <span className="text-sm text-gray-700 flex items-center gap-1">
-                        <IconStar className="w-4 h-4 text-yellow-400 fill-yellow-400" stroke={0} />
-                        4.0+
-                      </span>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="flex items-center">
-                    <input type="checkbox" className="rounded text-blue-600 mr-2" />
-                    <span className="text-sm text-gray-700">Только проверенные</span>
-                  </label>
-                </div>
-
-                <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <button 
+                  onClick={() => {
+                    fetchWorkers();
+                    setShowFilters(false);
+                  }}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
                   Применить
                 </button>
               </div>
@@ -181,127 +167,99 @@ export function Workers() {
           {/* Workers List */}
           <div className="md:col-span-3 space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-gray-600">Найдено {workers.length} кандидатов</p>
+              <p className="text-gray-600">
+                {loading ? "Загрузка..." : `Найдено ${workers?.length || 0} специалистов`}
+              </p>
             </div>
 
-            {workers.map((worker) => (
+            {loading && !workers ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 animate-pulse h-40"></div>
+                ))}
+              </div>
+            ) : workers?.map((worker) => (
               <div
                 key={worker.id}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/worker/${worker.id}`)}
+                className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/kindergarten/candidate/${worker.id}`)}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex gap-4 flex-1">
-                    {/* Avatar */}
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-                      {worker.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-600">
-                          {worker.name}
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-50 flex-shrink-0 overflow-hidden border border-blue-100">
+                    {worker.photo_url ? (
+                      <img src={worker.photo_url} alt={worker.full_name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-blue-600 text-2xl font-bold">
+                        {worker.full_name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 truncate mb-1">
+                          {worker.full_name}
                         </h3>
-                        {worker.badge && (
-                          <span className={`${worker.badgeColor} text-white text-xs font-bold px-2 py-1 rounded`}>
-                            {worker.badge}
-                          </span>
-                        )}
+                        <p className="text-blue-600 font-medium text-sm sm:text-base mb-2">
+                          {worker.desired_position || "Специалист"}
+                        </p>
                       </div>
-                      <p className="text-base font-medium text-blue-600 mb-1">{worker.position}</p>
-                      <div className="flex items-center gap-3 flex-wrap text-sm">
-                        {worker.verified && (
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
-                            ✓ Проверено
-                          </span>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <IconStar className="w-4 h-4 text-yellow-400 fill-yellow-400" stroke={0} />
-                          <span className="font-medium text-gray-900">{worker.rating}</span>
-                        </div>
+                      <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded text-yellow-700">
+                        <IconStar className="w-4 h-4 fill-current" />
+                        <span className="font-bold text-sm">{worker.rating || "0.0"}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4 flex-wrap">
+                      <div className="flex items-center gap-1">
+                        <IconMapPin className="w-4 h-4" />
+                        {worker.district || "Не указан"}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <IconBriefcase className="w-4 h-4" />
+                        {worker.experience_years} лет опыта
                       </div>
                     </div>
                   </div>
-                  
-                  <button 
-                    className="text-gray-400 hover:text-red-500 transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <IconHeart className="w-6 h-6" stroke={2} />
-                  </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <IconBriefcase className="w-4 h-4" stroke={2} />
-                    {worker.experience}
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <IconMapPin className="w-4 h-4" stroke={2} />
-                    {worker.district}
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <IconSchool className="w-4 h-4" stroke={2} />
-                    {worker.education}
-                  </div>
-                  <div className="text-gray-600">
-                    {worker.available}
-                  </div>
-                </div>
-
-                {/* Skills */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {worker.skills.map((skill, index) => (
-                    <span 
-                      key={index}
-                      className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <span className="text-xl font-bold text-blue-600">{worker.expectedSalary}</span>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-2">
                   <div className="flex gap-2">
-                    <button
+                    <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/worker/${worker.id}`);
+                        // invite flow
+                        navigate(`/kindergarten/candidate/${worker.id}`);
                       }}
-                      className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Резюме
-                    </button>
-                    <button 
-                      onClick={(e) => e.stopPropagation()}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors text-sm sm:text-base"
                     >
                       Пригласить
                     </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/kindergarten/candidate/${worker.id}`);
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                    >
+                      Резюме
+                    </button>
                   </div>
+                  <button 
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <IconHeart className="w-6 h-6" />
+                  </button>
                 </div>
               </div>
             ))}
 
-            {/* Pagination */}
-            <div className="flex justify-center gap-2 pt-8">
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                Назад
-              </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                1
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                2
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                3
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                Вперед
-              </button>
-            </div>
+            {!loading && workers?.length === 0 && (
+              <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
+                <p className="text-gray-500">Специалисты не найдены. Попробуйте изменить фильтры.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

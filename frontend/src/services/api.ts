@@ -27,7 +27,10 @@ api.interceptors.response.use(
       // Clear token and redirect to login if unauthorized
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_role');
-      // window.location.href = '/login'; // Optional: handled by app logic
+      // Force redirect to auth page on unauthorized
+      if (!window.location.pathname.startsWith('/auth') && !window.location.pathname.startsWith('/vacancies')) {
+        window.location.href = '/auth';
+      }
     }
     return Promise.reject(error);
   }

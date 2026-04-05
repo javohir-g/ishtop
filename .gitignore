@@ -1,25 +1,82 @@
-# Python
+# =============================================
+# Ish-Top — .gitignore
+# =============================================
+
+# -----------------------------------------------
+# Python / Backend
+# -----------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
 venv/
 .venv/
 ENV/
 env/
-.env
+.Python
 
-# Node
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# -----------------------------------------------
+# Environment variables — NEVER commit secrets!
+# -----------------------------------------------
+.env
+.env.*
+!.env.example
+
+# -----------------------------------------------
+# Node / Frontend
+# -----------------------------------------------
 node_modules/
 dist/
 dist-ssr/
 *.local
 
-# IDE
+# Vite cache
+.vite/
+
+# -----------------------------------------------
+# IDE & Editors
+# -----------------------------------------------
 .vscode/
 .idea/
 *.swp
 *.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# OS
+# -----------------------------------------------
+# OS generated files
+# -----------------------------------------------
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# -----------------------------------------------
+# Misc
+# -----------------------------------------------
+*.tmp
+*.bak
+query

@@ -19,6 +19,7 @@ import { KindergartenHome } from "./pages/KindergartenHome";
 import { KindergartenMessages } from "./pages/KindergartenMessages";
 import { KindergartenSettings } from "./pages/KindergartenSettings";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NotFound } from "./pages/NotFound";
 import { JobDetail } from "./pages/JobDetail";
 import { FilterOptions } from "./pages/FilterOptions";
@@ -85,7 +86,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "app",
-        Component: Root,
+        element: (
+          <ProtectedRoute allowedRoles={["job_seeker"]}>
+            <Root />
+          </ProtectedRoute>
+        ),
         children: [
           { 
             index: true, 
@@ -139,7 +144,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "kindergarten",
-        Component: Root,
+        element: (
+          <ProtectedRoute allowedRoles={["kindergarten_employer"]}>
+            <Root />
+          </ProtectedRoute>
+        ),
         children: [
           { 
             index: true, 
@@ -193,10 +202,14 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin",
-        Component: AdminLayout,
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminLayout />
+          </ProtectedRoute>
+        ),
         children: [
           {
-            index: true,
+            index: true, 
             Component: AdminDashboard,
           },
           {

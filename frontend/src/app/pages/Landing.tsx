@@ -1,14 +1,57 @@
 import { Search, MapPin, Clock, TrendingUp, Users, Briefcase, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router";
-// MOCK DATA - Replace with API call when integrating backend
-import { MOCK_VACANCIES } from "../../data/mockData";
+import { useState, useEffect, useCallback } from "react";
+import { useApi } from "@/hooks/useApi";
+import api from "@/services/api";
+
+interface Vacancy {
+  id: number;
+  title: string;
+  kindergarten?: { name: string };
+  district: string;
+  salary_min?: number;
+  salary_max?: number;
+  published_at?: string;
+  is_featured?: boolean;
+}
+
+interface PublicStats {
+  vacancies_count: number;
+  workers_count: number;
+  kindergartens_count: number;
+}
 
 export function Landing() {
   const navigate = useNavigate();
 
-  // MOCK DATA - Replace with API call: GET /api/vacancies?limit=6&recent=true
-  // TODO: Implement: const { data: recentVacancies } = useFetch('/api/vacancies?limit=6&recent=true')
-  const recentVacancies = MOCK_VACANCIES.slice(0, 6);
+  const fetchVacanciesFunc = useCallback(() => 
+    api.get("/vacancies", { params: { per_page: 6, is_featured: true } }), []);
+  
+  const { data: vacancyResponse, loading, error, execute: fetchVacancies } = useApi<{ items: Vacancy[] }>(fetchVacanciesFunc);
+
+  const fetchStatsFunc = useCallback(() => api.get("/stats"), []);
+  const { data: stats, execute: fetchStats } = useApi<PublicStats>(fetchStatsFunc);
+
+  useEffect(() => {
+    fetchVacancies();
+    fetchStats();
+  }, [fetchVacancies, fetchStats]);
+
+  const recentVacancies = vacancyResponse?.items || [];
+
+  const formatSalary = (min?: number, max?: number) => {
+    if (!min && !max) return "З/П не указана";
+    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} сум`;
+    if (min) return `от ${min.toLocaleString()} сум`;
+    if (max) return `до ${max.toLocaleString()} сум`;
+    return "З/П не указана";
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "Недавно";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -73,16 +116,22 @@ export function Landing() {
               {/* Trust Block */}
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <div className="text-3xl font-bold text-blue-600 mb-1">1 240+</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-1">
+                    {stats?.vacancies_count !== undefined ? `${stats.vacancies_count}+` : "..."}
+                  </div>
                   <div className="text-sm text-gray-600">Вакансий</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-blue-600 mb-1">320+</div>
-                  <div className="text-sm text-gray-600">Детских садов</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-1">
+                    {stats?.workers_count !== undefined ? `${stats.workers_count}+` : "..."}
+                  </div>
+                  <div className="text-sm text-gray-600">Кандидатов</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-blue-600 mb-1">5 800+</div>
-                  <div className="text-sm text-gray-600">Кандидатов</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-1">
+                    {stats?.kindergartens_count !== undefined ? `${stats.kindergartens_count}+` : "..."}
+                  </div>
+                  <div className="text-sm text-gray-600">Садиков</div>
                 </div>
               </div>
             </div>
@@ -153,33 +202,50 @@ export function Landing() {
             </button>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentVacancies.map((vacancy) => (
-              <div
-                key={vacancy.id}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/vacancies/${vacancy.id}`)}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h4 className="text-lg font-semibold text-gray-900 flex-1">
-                    {vacancy.title}
-                  </h4>
-                  {vacancy.badge && (
-                    <span className={`${vacancy.badgeColor} text-white text-xs font-bold px-2 py-1 rounded`}>
-                      {vacancy.badge}
+            {loading ? (
+              // Skeleton loading state
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-gray-100 rounded w-1/2 mb-6"></div>
+                  <div className="h-10 bg-gray-50 rounded mt-4"></div>
+                </div>
+              ))
+            ) : recentVacancies.length > 0 ? (
+              recentVacancies.map((vacancy) => (
+                <div
+                  key={vacancy.id}
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group"
+                  onClick={() => navigate(`/job/${vacancy.id}`)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h4 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors flex-1">
+                      {vacancy.title}
+                    </h4>
+                    {vacancy.is_featured && (
+                      <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
+                        ТОП
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-gray-600 mb-2">{vacancy.kindergarten?.name || "Детский сад"}</p>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                    <MapPin className="w-4 h-4" />
+                    {vacancy.district}
+                  </div>
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <span className="text-lg font-bold text-blue-600">
+                      {formatSalary(vacancy.salary_min, vacancy.salary_max)}
                     </span>
-                  )}
+                    <span className="text-sm text-gray-500">{formatDate(vacancy.published_at)}</span>
+                  </div>
                 </div>
-                <p className="text-gray-600 mb-2">{vacancy.kindergarten}</p>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                  <MapPin className="w-4 h-4" />
-                  {vacancy.district}
-                </div>
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <span className="text-lg font-bold text-blue-600">{vacancy.salary}</span>
-                  <span className="text-sm text-gray-500">{vacancy.date}</span>
-                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12 text-gray-500">
+                Пока нет активных топ-вакансий
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
