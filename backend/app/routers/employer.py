@@ -45,7 +45,7 @@ async def update_employer_profile(
         # Create kindergarten first
         k_data = profile_data.kindergarten
         new_k = Kindergarten(
-            name=k_data.name if k_data and k_data.name else "Новый детский сад",
+            name=k_data.name if k_data and k_data.name else "Мой детский сад",
             district=k_data.district if k_data and k_data.district else "Не указан",
             address=k_data.address if k_data else None,
             phone=k_data.phone if k_data else None,
@@ -70,7 +70,7 @@ async def update_employer_profile(
             employer.full_name = profile_data.full_name
         if profile_data.position:
             employer.position = profile_data.position
-        if profile_data.photo_url:
+        if profile_data.photo_url is not None:
             employer.photo_url = profile_data.photo_url
                 
         # Update kindergarten fields
@@ -78,15 +78,21 @@ async def update_employer_profile(
             k_data = profile_data.kindergarten
             if k_data.name: employer.kindergarten.name = k_data.name
             if k_data.district: employer.kindergarten.district = k_data.district
-            if k_data.address: employer.kindergarten.address = k_data.address
-            if k_data.phone: employer.kindergarten.phone = k_data.phone
-            if k_data.email: employer.kindergarten.email = k_data.email
-            if k_data.description: employer.kindergarten.description = k_data.description
+            if k_data.address is not None: employer.kindergarten.address = k_data.address
+            if k_data.phone is not None: employer.kindergarten.phone = k_data.phone
+            if k_data.email is not None: employer.kindergarten.email = k_data.email
+            if k_data.description is not None: employer.kindergarten.description = k_data.description
                 
     await db.commit()
-    await db.refresh(employer)
-    if employer.kindergarten:
-        await db.refresh(employer.kindergarten)
+    
+    # RELOAD with kindergarten relationship for the response
+    final_result = await db.execute(
+        select(KindergartenEmployer)
+        .where(KindergartenEmployer.user_id == current_user.id)
+        .options(selectinload(KindergartenEmployer.kindergarten))
+    )
+    employer = final_result.scalar_one()
+    
     return {"employer": employer, "kindergarten": employer.kindergarten}
 
 @router.get("/vacancies", response_model=List[VacancyOut])
