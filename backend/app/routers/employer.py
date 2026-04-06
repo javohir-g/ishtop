@@ -103,7 +103,11 @@ async def get_my_vacancies(
     if not kindergarten_id:
         raise HTTPException(status_code=404, detail="Kindergarten not found")
         
-    v_result = await db.execute(select(Vacancy).where(Vacancy.kindergarten_id == kindergarten_id))
+    v_result = await db.execute(
+        select(Vacancy)
+        .where(Vacancy.kindergarten_id == kindergarten_id)
+        .options(selectinload(Vacancy.kindergarten))
+    )
     return v_result.scalars().all()
 
 @router.post("/vacancies", response_model=VacancyOut, status_code=status.HTTP_201_CREATED)
@@ -129,8 +133,14 @@ async def create_vacancy(
     )
     db.add(new_vacancy)
     await db.commit()
-    await db.refresh(new_vacancy)
-    return new_vacancy
+    
+    # Reload with kindergarten relationship for the response schema
+    result = await db.execute(
+        select(Vacancy)
+        .where(Vacancy.id == new_vacancy.id)
+        .options(selectinload(Vacancy.kindergarten))
+    )
+    return result.scalar_one()
 
 @router.get("/vacancies/{vacancy_id}", response_model=VacancyOut)
 async def get_my_vacancy(
