@@ -142,6 +142,8 @@ async def get_current_user(
 ) -> User:
     """Dependency: extract and validate JWT, return current User."""
     token = credentials.credentials
+    logger.debug(f"Validating token: {token[:10]}...")
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -150,21 +152,25 @@ async def get_current_user(
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id = payload.get("sub")
+        logger.debug(f"Decoded payload sub: {user_id}")
         if user_id is None:
             logger.error("JWT payload missing 'sub'")
             raise credentials_exception
     except JWTError as e:
-        logger.error(f"JWT Decode Error: {e}")
+        logger.error(f"JWT Decode Error with secret '{settings.SECRET_KEY[:4]}...': {e}")
         raise credentials_exception
 
     result = await db.execute(select(User).where(User.id == int(user_id)))
     user = result.scalar_one_or_none()
+    
     if user is None:
         logger.error(f"User not found for id: {user_id}")
         raise credentials_exception
     if not user.is_active:
         logger.error(f"User {user_id} is inactive")
         raise credentials_exception
+    
+    logger.debug(f"Successfully validated user: {user.username or user.id}")
     return user
 
 
