@@ -159,6 +159,7 @@ async def get_my_vacancy(
                 KindergartenEmployer.user_id == current_user.id
             )
         )
+        .options(selectinload(Vacancy.kindergarten))
     )
     vacancy = result.scalar_one_or_none()
     if not vacancy:
@@ -197,8 +198,14 @@ async def update_my_vacancy(
         vacancy.status = VacancyStatus.ACTIVE if vacancy_data["is_active"] else VacancyStatus.PAUSED
 
     await db.commit()
-    await db.refresh(vacancy)
-    return vacancy
+    
+    # Reload with kindergarten relationship for the response schema
+    result = await db.execute(
+        select(Vacancy)
+        .where(Vacancy.id == vacancy_id)
+        .options(selectinload(Vacancy.kindergarten))
+    )
+    return result.scalar_one()
 
 @router.delete("/vacancies/{vacancy_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_my_vacancy(
