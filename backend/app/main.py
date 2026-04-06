@@ -38,6 +38,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global error logging
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    import traceback
+    logger.error(f"GLOBAL ERROR: {exc}")
+    logger.error(traceback.format_exc())
+    return {
+        "detail": "Internal Server Error. Check server logs."
+    }
+
 # Include routers
 app.include_router(profiles_router, prefix="/api/v1")
 app.include_router(employer_router, prefix="/api/v1")
