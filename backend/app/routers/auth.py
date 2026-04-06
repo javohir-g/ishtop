@@ -66,12 +66,25 @@ async def telegram_auth(
         await db.refresh(user)
         is_new_user = True
     else:
+        # Update user info if changed
         user.last_login_at = datetime.now(timezone.utc)
         user.username = tg_user.get("username", user.username)
         user.first_name = tg_user.get("first_name", user.first_name)
         user.last_name = tg_user.get("last_name", user.last_name)
         await db.commit()
         await db.refresh(user)
+
+        # Check if profile exists and mark as new if not
+        if user.role == UserRole.JOB_SEEKER:
+            from ..models import JobSeekerProfile
+            profile_res = await db.execute(select(JobSeekerProfile).where(JobSeekerProfile.user_id == user.id))
+            if not profile_res.scalar_one_or_none():
+                is_new_user = True
+        elif user.role == UserRole.KINDERGARTEN_EMPLOYER:
+            from ..models import KindergartenEmployer
+            emp_res = await db.execute(select(KindergartenEmployer).where(KindergartenEmployer.user_id == user.id))
+            if not emp_res.scalar_one_or_none():
+                is_new_user = True
 
     access_token = create_access_token(data={"sub": str(user.id)})
     return TokenResponse(
@@ -132,12 +145,25 @@ async def telegram_widget_auth(
         await db.refresh(user)
         is_new_user = True
     else:
+        # Update user info if changed
         user.last_login_at = datetime.now(timezone.utc)
         user.username = tg_user.get("username", user.username)
         user.first_name = tg_user.get("first_name", user.first_name)
         user.last_name = tg_user.get("last_name", user.last_name)
         await db.commit()
         await db.refresh(user)
+
+        # Check if profile exists and mark as new if not
+        if user.role == UserRole.JOB_SEEKER:
+            from ..models import JobSeekerProfile
+            profile_res = await db.execute(select(JobSeekerProfile).where(JobSeekerProfile.user_id == user.id))
+            if not profile_res.scalar_one_or_none():
+                is_new_user = True
+        elif user.role == UserRole.KINDERGARTEN_EMPLOYER:
+            from ..models import KindergartenEmployer
+            emp_res = await db.execute(select(KindergartenEmployer).where(KindergartenEmployer.user_id == user.id))
+            if not emp_res.scalar_one_or_none():
+                is_new_user = True
 
     access_token = create_access_token(data={"sub": str(user.id)})
     return TokenResponse(
