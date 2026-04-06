@@ -34,8 +34,20 @@ async def get_my_profile(
             )
         )
         profile = result.scalar_one_or_none()
+        
         if not profile:
-            raise HTTPException(status_code=404, detail="Profile not found")
+            # Auto-create basic profile to avoid 404
+            profile = JobSeekerProfile(
+                user_id=current_user.id, 
+                full_name=current_user.first_name or current_user.username or "User",
+                experience_years=0
+            )
+            db.add(profile)
+            await db.commit()
+            await db.refresh(profile)
+            # Re-fetch to ensure relations are initialized
+            return await get_my_profile(current_user, db)
+            
         return profile
     
     elif current_user.role == UserRole.KINDERGARTEN_EMPLOYER:
