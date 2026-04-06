@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 from typing import List
 
 from ..database import get_db
-from ..models import User, UserRole, Vacancy, Application, ApplicationStatus, KindergartenEmployer, Kindergarten
+from ..models import User, UserRole, Vacancy, Application, ApplicationStatus, VacancyStatus, KindergartenEmployer, Kindergarten
 from ..schemas import VacancyOut, VacancyCreate, ApplicationOut, EmployerProfileOut, EmployerProfileUpdate
 from ..auth import get_current_user, require_role
 
