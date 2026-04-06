@@ -73,7 +73,7 @@ async def telegram_auth(
         await db.commit()
         await db.refresh(user)
 
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return TokenResponse(
         access_token=access_token,
         user_id=user.id,
@@ -139,7 +139,7 @@ async def telegram_widget_auth(
         await db.commit()
         await db.refresh(user)
 
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return TokenResponse(
         access_token=access_token,
         user_id=user.id,
