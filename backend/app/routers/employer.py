@@ -249,7 +249,10 @@ async def get_incoming_applications(
         select(Application)
         .join(Vacancy)
         .where(Vacancy.kindergarten_id == kindergarten_id)
-        .options(selectinload(Application.job_seeker))
+        .options(
+            selectinload(Application.job_seeker),
+            selectinload(Application.vacancy)
+        )
     )
     return apps_result.scalars().all()
 
@@ -311,8 +314,17 @@ async def update_application_status(
         application.viewed_at = func.now()
     
     await db.commit()
-    await db.refresh(application)
-    return application
+    
+    # Reload with relationships for the response schema
+    result = await db.execute(
+        select(Application)
+        .where(Application.id == application_id)
+        .options(
+            selectinload(Application.job_seeker),
+            selectinload(Application.vacancy)
+        )
+    )
+    return result.scalar_one()
 
 @router.get("/statistics")
 async def get_employer_stats(
