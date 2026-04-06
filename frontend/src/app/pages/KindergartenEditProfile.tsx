@@ -46,7 +46,23 @@ export function KindergartenEditProfile() {
 
   const handleSave = async () => {
     try {
-      await updateProfile(formData);
+      // Structure the data to match the backend's EmployerProfileUpdate schema
+      const payload = {
+        full_name: formData.full_name,
+        position: formData.position,
+        photo_url: profile?.employer?.photo_url, // Keep old photo url
+        kindergarten: {
+          name: formData.kindergarten_name,
+          description: formData.kindergarten_description,
+          address: formData.kindergarten_address,
+          district: formData.kindergarten_district,
+          phone: formData.kindergarten_phone,
+          email: formData.kindergarten_email,
+          logo_url: formData.kindergarten_logo_url
+        }
+      };
+      
+      await updateProfile(payload);
       navigate("/kindergarten/profile");
     } catch (err: any) {
       alert("Ошибка при сохранении: " + (err.response?.data?.detail || err.message));
