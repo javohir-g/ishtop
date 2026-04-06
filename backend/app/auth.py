@@ -85,21 +85,26 @@ def validate_telegram_login_widget(data: dict) -> Optional[dict]:
         if not received_hash:
             return None
 
-        # Build check string (sorted key=value, excluding hash)
+        # Build check string (sorted key=value, excluding hash and None values)
         check_pairs = []
         for key in sorted(data.keys()):
-            if key == "hash":
+            if key == "hash" or data[key] is None:
                 continue
             check_pairs.append(f"{key}={data[key]}")
         check_string = "\n".join(check_pairs)
 
         # For Login Widget: secret_key = SHA256(bot_token)
+        if not settings.TELEGRAM_BOT_TOKEN:
+            logger.error("TELEGRAM_BOT_TOKEN is not set in settings")
+            return None
+
         secret_key = hashlib.sha256(settings.TELEGRAM_BOT_TOKEN.encode()).digest()
         computed_hash = hmac.new(
             secret_key, check_string.encode(), hashlib.sha256
         ).hexdigest()
 
         if not hmac.compare_digest(computed_hash, received_hash):
+            logger.warning(f"Telegram Widget Hash Mismatch. Received: {received_hash[:8]}...")
             return None
 
         # Check auth_date (reject if older than 24 hours)
