@@ -174,4 +174,32 @@ async def telegram_widget_auth(
     )
 
 
+@router.put("/role", response_model=TokenResponse)
+async def update_user_role(
+    role: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update user role and return a new JWT token."""
+    try:
+        new_role = UserRole(role)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid role. Must be one of: {[r.value for r in UserRole]}",
+        )
+
+    current_user.role = new_role
+    await db.commit()
+    await db.refresh(current_user)
+
+    access_token = create_access_token(data={"sub": str(current_user.id)})
+    return TokenResponse(
+        access_token=access_token,
+        user_id=current_user.id,
+        role=current_user.role.value,
+        is_new_user=False, # Now they have a role
+    )
+
+
 # dev-token removed for production security

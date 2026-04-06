@@ -6,6 +6,8 @@ import api from "@/services/api";
 
 export function KindergartenEditProfile() {
   const navigate = useNavigate();
+  const query = new URLSearchParams(window.location.search);
+  const isOnboarding = query.get("onboarding") === "true";
   
   const [formData, setFormData] = useState({
     full_name: "",
@@ -29,15 +31,15 @@ export function KindergartenEditProfile() {
   useEffect(() => {
     if (profile) {
       setFormData({
-        full_name: profile.employer.full_name || "",
-        position: profile.employer.position || "",
-        kindergarten_name: profile.kindergarten.name || "",
-        kindergarten_description: profile.kindergarten.description || "",
-        kindergarten_address: profile.kindergarten.address || "",
-        kindergarten_district: profile.kindergarten.district || "",
-        kindergarten_phone: profile.kindergarten.phone || "",
-        kindergarten_email: profile.kindergarten.email || "",
-        kindergarten_logo_url: profile.kindergarten.logo_url || ""
+        full_name: profile.employer?.full_name || "",
+        position: profile.employer?.position || "",
+        kindergarten_name: profile.kindergarten?.name || "",
+        kindergarten_description: profile.kindergarten?.description || "",
+        kindergarten_address: profile.kindergarten?.address || "",
+        kindergarten_district: profile.kindergarten?.district || "",
+        kindergarten_phone: profile.kindergarten?.phone || "",
+        kindergarten_email: profile.kindergarten?.email || "",
+        kindergarten_logo_url: profile.kindergarten?.logo_url || ""
       });
     }
   }, [profile]);
@@ -56,7 +58,7 @@ export function KindergartenEditProfile() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  if (loading) {
+  if (loading && !profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -68,15 +70,21 @@ export function KindergartenEditProfile() {
     <div className="bg-white min-h-screen pb-24">
       {/* Header */}
       <div className="px-5 pt-6 pb-4 flex items-center gap-3 lg:px-8 lg:pt-8 lg:pb-6 lg:border-b lg:border-gray-200">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-        >
-          <IconArrowLeft className="w-6 h-6 text-gray-900" stroke={2} />
-        </button>
+        {!isOnboarding && (
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+          >
+            <IconArrowLeft className="w-6 h-6 text-gray-900" stroke={2} />
+          </button>
+        )}
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black text-gray-900">Редактировать профиль</h1>
-          <p className="text-gray-600 text-sm font-bold mt-1 hidden lg:block">Обновите информацию о детском саде</p>
+          <h1 className="text-2xl lg:text-3xl font-black text-gray-900">
+            {isOnboarding ? "Настройте ваш детский сад" : "Редактировать профиль"}
+          </h1>
+          <p className="text-gray-600 text-sm font-bold mt-1">
+            {isOnboarding ? "Расскажите о себе и вашем садике" : "Обновите информацию о детском саде"}
+          </p>
         </div>
       </div>
 

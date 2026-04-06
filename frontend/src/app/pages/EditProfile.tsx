@@ -19,6 +19,8 @@ interface ProfileData {
 export function EditProfile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const query = new URLSearchParams(window.location.search);
+  const isOnboarding = query.get("onboarding") === "true";
 
   const fetchFunc = useCallback(() => api.get("/profile"), []);
   const { data: initialData, loading: loadingProfile } = useApi<ProfileData>(fetchFunc);
@@ -70,14 +72,19 @@ export function EditProfile() {
     <div className="bg-white min-h-screen pb-24 lg:pb-8">
       {/* Header */}
       <div className="px-5 pt-6 pb-4 flex items-center gap-3 lg:px-8 lg:pt-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-        >
-          <IconArrowLeft className="w-6 h-6 text-gray-900" stroke={2} />
-        </button>
+        {!isOnboarding && (
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+          >
+            <IconArrowLeft className="w-6 h-6 text-gray-900" stroke={2} />
+          </button>
+        )}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Редактировать профиль</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isOnboarding ? "Заполните ваш профиль" : "Редактировать профиль"}
+          </h1>
+          {isOnboarding && <p className="text-gray-500 text-sm">Это поможет работодателям быстрее найти вас</p>}
         </div>
       </div>
 
