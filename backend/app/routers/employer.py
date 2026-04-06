@@ -16,15 +16,36 @@ async def get_employer_profile(
     current_user: User = Depends(require_role(UserRole.KINDERGARTEN_EMPLOYER)),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get employer and kindergarten profile."""
+    """Get employer and kindergarten profile. Auto-creates if missing."""
     result = await db.execute(
         select(KindergartenEmployer)
         .where(KindergartenEmployer.user_id == current_user.id)
         .options(selectinload(KindergartenEmployer.kindergarten))
     )
     employer = result.scalar_one_or_none()
+    
     if not employer:
-        raise HTTPException(status_code=404, detail="Employer profile not found")
+        # Auto-create empty kindergarten and employer link
+        new_k = Kindergarten(
+            name=f"Детский сад {current_user.first_name or ''}".strip() or "Мой детский сад",
+            district="Не указан",
+            is_verified=False
+        )
+        db.add(new_k)
+        await db.flush() # Get ID
+        
+        employer = KindergartenEmployer(
+            user_id=current_user.id,
+            kindergarten_id=new_k.id,
+            full_name=current_user.first_name + " " + (current_user.last_name or "") if current_user.first_name else "Работодатель",
+            position="Заведующий",
+            photo_url=current_user.photo_url
+        )
+        db.add(employer)
+        await db.commit()
+        await db.refresh(employer)
+        await db.refresh(new_k)
+
     return {"employer": employer, "kindergarten": employer.kindergarten}
 
 @router.put("/profile", response_model=EmployerProfileOut)

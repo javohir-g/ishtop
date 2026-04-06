@@ -45,12 +45,20 @@ export function KindergartenEditProfile() {
   }, [profile]);
 
   const handleSave = async () => {
+    if (!formData.kindergarten_name || formData.kindergarten_name === "Мой детский сад") {
+      alert("Пожалуйста, введите название вашего детского сада");
+      return;
+    }
+    if (!formData.kindergarten_district || formData.kindergarten_district === "Не указан") {
+      alert("Пожалуйста, выберите район");
+      return;
+    }
+
     try {
-      // Structure the data to match the backend's EmployerProfileUpdate schema
       const payload = {
         full_name: formData.full_name,
         position: formData.position,
-        photo_url: profile?.employer?.photo_url, // Keep old photo url
+        photo_url: profile?.employer?.photo_url,
         kindergarten: {
           name: formData.kindergarten_name,
           description: formData.kindergarten_description,
@@ -65,6 +73,7 @@ export function KindergartenEditProfile() {
       await updateProfile(payload);
       navigate("/kindergarten/profile");
     } catch (err: any) {
+      console.error("Save error:", err);
       alert("Ошибка при сохранении: " + (err.response?.data?.detail || err.message));
     }
   };
@@ -76,184 +85,206 @@ export function KindergartenEditProfile() {
 
   if (loading && !profile) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <p className="mt-4 text-gray-500 font-bold animate-pulse text-lg">Настраиваем ваш кабинет...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white min-h-screen pb-24">
-      {/* Header */}
-      <div className="px-5 pt-6 pb-4 flex items-center gap-3 lg:px-8 lg:pt-8 lg:pb-6 lg:border-b lg:border-gray-200">
-        {!isOnboarding && (
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-          >
-            <IconArrowLeft className="w-6 h-6 text-gray-900" stroke={2} />
-          </button>
-        )}
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-black text-gray-900">
-            {isOnboarding ? "Настройте ваш детский сад" : "Редактировать профиль"}
-          </h1>
-          <p className="text-gray-600 text-sm font-bold mt-1">
-            {isOnboarding ? "Расскажите о себе и вашем садике" : "Обновите информацию о детском саде"}
-          </p>
+    <div className="bg-slate-50 min-h-screen pb-24">
+      {/* Premium Header */}
+      <div className="bg-white px-5 pt-8 pb-6 border-b border-slate-200">
+        <div className="max-w-3xl mx-auto flex items-center gap-4">
+          {!isOnboarding && (
+            <button
+              onClick={() => navigate(-1)}
+              className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95"
+            >
+              <IconArrowLeft className="w-6 h-6 text-slate-600" stroke={2.5} />
+            </button>
+          )}
+          <div className="flex-1">
+            <h1 className="text-2xl font-black text-slate-900 leading-tight">
+              {isOnboarding ? "Давайте создадим ваш детский сад!" : "Редактирование профиля"}
+            </h1>
+            <p className="text-slate-500 font-medium mt-1">
+              {isOnboarding ? "Заполните основную информацию, чтобы начать поиск сотрудников" : "Следите за актуальностью данных о вашем филиале"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="px-5 lg:px-8 max-w-2xl mx-auto py-6">
-        {/* Profile Photo */}
-        <div className="mb-8 p-6 bg-gray-50 rounded-[2rem] border border-gray-100">
-          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Логотип и Фото</h3>
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="w-24 h-24 rounded-3xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-blue-100 overflow-hidden">
-              {formData.kindergarten_logo_url ? (
-                <img src={formData.kindergarten_logo_url} className="w-full h-full object-cover" />
-              ) : (
-                <IconBuilding className="w-10 h-10 text-blue-600" stroke={1.5} />
-              )}
-            </div>
-            <div className="flex-1 space-y-3 w-full">
-               <input
+      <div className="px-5 max-w-3xl mx-auto py-8 space-y-6">
+        {/* Step 1: Kindergarten Identity */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-lg">1</div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Карточка детского сада</h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="group">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Название садика *</label>
+              <input
                 type="text"
-                name="kindergarten_logo_url"
-                value={formData.kindergarten_logo_url}
+                name="kindergarten_name"
+                value={formData.kindergarten_name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="URL логотипа..."
+                className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                placeholder="Например: Садик «Солнышко»"
               />
-              <p className="text-[10px] text-gray-400 font-bold italic">Вставьте прямую ссылку на изображение или используйте камеру</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Район города *</label>
+                <select
+                  name="kindergarten_district"
+                  value={formData.kindergarten_district}
+                  onChange={handleChange}
+                  className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 outline-none transition-all"
+                >
+                  <option value="">Выберите район</option>
+                  <option value="Мирзо-Улугбекский">Мирзо-Улугбекский</option>
+                  <option value="Чиланзарский">Чиланзарский</option>
+                  <option value="Юнусабадский">Юнусабадский</option>
+                  <option value="Яккасарайский">Яккасарайский</option>
+                  <option value="Шайхантахурский">Шайхантахурский</option>
+                  <option value="Мирабадский">Мирабадский</option>
+                  <option value="Алмазарский">Алмазарский</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Логотип (URL)</label>
+                <input
+                  type="text"
+                  name="kindergarten_logo_url"
+                  value={formData.kindergarten_logo_url}
+                  onChange={handleChange}
+                  className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Точный адрес</label>
+                <input
+                  type="text"
+                  name="kindergarten_address"
+                  value={formData.kindergarten_address}
+                  onChange={handleChange}
+                  className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                  placeholder="Улица, дом, ориентир"
+                />
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-            {/* Kindergarten Info */}
-            <div className="space-y-4">
-               <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider border-l-4 border-blue-600 pl-3">Информация о саде</h3>
-               <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Название</label>
-                  <input
-                    type="text"
-                    name="kindergarten_name"
-                    value={formData.kindergarten_name}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                    placeholder="Детский сад..."
-                  />
-               </div>
-               <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Район</label>
-                  <select
-                    name="kindergarten_district"
-                    value={formData.kindergarten_district}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                  >
-                    <option value="">Выберите район</option>
-                    <option value="Мирзо-Улугбекский">Мирзо-Улугбекский</option>
-                    <option value="Чиланзарский">Чиланзарский</option>
-                    <option value="Юнусабадский">Юнусабадский</option>
-                    <option value="Яккасарайский">Яккасарайский</option>
-                    <option value="Шайхантахурский">Шайхантахурский</option>
-                  </select>
-               </div>
-               <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Адрес</label>
-                  <input
-                    type="text"
-                    name="kindergarten_address"
-                    value={formData.kindergarten_address}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                    placeholder="Улица, дом..."
-                  />
-               </div>
-               <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Описание</label>
-                  <textarea
-                    name="kindergarten_description"
-                    value={formData.kindergarten_description}
-                    onChange={handleChange}
-                    rows={4}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all resize-none"
-                    placeholder="Опишите ваш детский сад..."
-                  />
-               </div>
+        {/* Step 2: About & Description */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-bold text-lg">2</div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Подробности</h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">О детском саде</label>
+              <textarea
+                name="kindergarten_description"
+                value={formData.kindergarten_description}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-purple-600/10 focus:border-purple-600 outline-none transition-all resize-none placeholder:text-slate-300"
+                placeholder="Расскажите о преимуществах вашего сада..."
+              />
             </div>
-
-            {/* Representative Info */}
-            <div className="space-y-4 pt-6">
-                <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider border-l-4 border-blue-600 pl-3">Ваши данные</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Ваше имя</label>
-                        <input
-                            type="text"
-                            name="full_name"
-                            value={formData.full_name}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Должность</label>
-                        <input
-                            type="text"
-                            name="position"
-                            value={formData.position}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Contacts Info */}
-            <div className="space-y-4 pt-6">
-                <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider border-l-4 border-blue-600 pl-3">Контакты для связи</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Публичный Email</label>
-                        <input
-                            type="email"
-                            name="kindergarten_email"
-                            value={formData.kindergarten_email}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Публичный Телефон</label>
-                        <input
-                            type="tel"
-                            name="kindergarten_phone"
-                            value={formData.kindergarten_phone}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
-                        />
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        {/* Save Button */}
-        <div className="mt-12 flex gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all"
-          >
-            Отмена
-          </button>
+        {/* Step 3: Contact Person */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-lg">3</div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Представитель</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Ф. И. О.</label>
+                  <input
+                      type="text"
+                      name="full_name"
+                      value={formData.full_name}
+                      onChange={handleChange}
+                      className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-emerald-600/10 focus:border-emerald-600 outline-none transition-all"
+                  />
+              </div>
+              <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Ваша должность</label>
+                  <input
+                      type="text"
+                      name="position"
+                      value={formData.position}
+                      onChange={handleChange}
+                      className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-emerald-600/10 focus:border-emerald-600 outline-none transition-all"
+                      placeholder="Заведующая / Директор"
+                  />
+              </div>
+          </div>
+        </div>
+
+        {/* Step 4: Contact Information */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-bold text-lg">4</div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Контакты для откликов</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Email садика</label>
+                  <input
+                      type="email"
+                      name="kindergarten_email"
+                      value={formData.kindergarten_email}
+                      onChange={handleChange}
+                      className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-orange-600/10 focus:border-orange-600 outline-none transition-all"
+                      placeholder="garden@mail.ru"
+                  />
+              </div>
+              <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Контактный телефон</label>
+                  <input
+                      type="tel"
+                      name="kindergarten_phone"
+                      value={formData.kindergarten_phone}
+                      onChange={handleChange}
+                      className="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-orange-600/10 focus:border-orange-600 outline-none transition-all"
+                      placeholder="+998"
+                  />
+              </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="pt-4">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-200 active:scale-95 transition-all disabled:opacity-50"
+            className="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black uppercase text-sm tracking-widest shadow-2xl shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
           >
-            {saving ? "Сохранение..." : "Сохранить профиль"}
+            {saving ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Сохраняем...
+              </>
+            ) : (
+              "Сохранить и продолжить"
+            )}
           </button>
         </div>
       </div>
