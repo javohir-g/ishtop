@@ -8,11 +8,10 @@ import api from "@/services/api";
 interface ProfileData {
   full_name: string;
   desired_position?: string;
-  bio?: string;
-  phone?: string;
+  about_me?: string;
   district?: string;
   experience_years?: number;
-  desired_salary?: string;
+  desired_salary_min?: number;
   photo_url?: string;
 }
 
@@ -22,21 +21,20 @@ export function EditProfile() {
   const query = new URLSearchParams(window.location.search);
   const isOnboarding = query.get("onboarding") === "true";
 
-  const fetchFunc = useCallback(() => api.get("/profile"), []);
+  const fetchFunc = useCallback(() => api.get("/profiles/me"), []);
   const { data: initialData, loading: loadingProfile } = useApi<ProfileData>(fetchFunc);
 
-  const [formData, setFormData] = useState<ProfileData>({
+  const [formData, setFormData] = useState<any>({
     full_name: "",
     desired_position: "",
-    bio: "",
-    phone: "",
+    about_me: "",
     district: "",
     experience_years: 0,
-    desired_salary: "",
+    desired_salary_min: 0,
   });
 
   const { execute: updateProfile, loading: saving } = useApiMutation(
-    (data: ProfileData) => api.put("/profile", data)
+    (data: any) => api.put("/profiles/me", data)
   );
 
   useEffect(() => {
@@ -44,17 +42,16 @@ export function EditProfile() {
       setFormData({
         full_name: initialData.full_name || "",
         desired_position: initialData.desired_position || "",
-        bio: initialData.bio || "",
-        phone: initialData.phone || "",
+        about_me: initialData.about_me || "",
         district: initialData.district || "",
         experience_years: initialData.experience_years || 0,
-        desired_salary: initialData.desired_salary || "",
+        desired_salary_min: initialData.desired_salary_min || 0,
       });
     }
   }, [initialData]);
 
   const handleSave = async () => {
-    if (!formData.full_name.trim()) {
+    if (!formData.full_name || !formData.full_name.trim()) {
       alert("Имя обязательно для заполнения");
       return;
     }
@@ -167,8 +164,8 @@ export function EditProfile() {
             <div>
               <label className="text-xs text-gray-500 font-bold mb-1 block uppercase tracking-wider">О себе</label>
               <textarea
-                value={formData.bio}
-                onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                value={formData.about_me}
+                onChange={(e) => setFormData({...formData, about_me: e.target.value})}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all min-h-[120px]"
                 placeholder="Расскажите о своем опыте..."
               />
@@ -176,11 +173,11 @@ export function EditProfile() {
             <div>
               <label className="text-xs text-gray-500 font-bold mb-1 block uppercase tracking-wider">Желаемая зарплата</label>
               <input
-                type="text"
-                value={formData.desired_salary}
-                onChange={(e) => setFormData({...formData, desired_salary: e.target.value})}
+                type="number"
+                value={formData.desired_salary_min}
+                onChange={(e) => setFormData({...formData, desired_salary_min: parseInt(e.target.value) || 0})}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all"
-                placeholder="Например: 5,000,000 сум"
+                placeholder="Например: 5000000"
               />
             </div>
           </div>
