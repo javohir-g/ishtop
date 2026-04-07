@@ -22,11 +22,15 @@ export function KindergartenEditProfile() {
   });
 
   const fetchProfileFunc = useCallback(() => api.get("/employer/profile"), []);
-  const { data: profile, loading } = useApi<any>(fetchProfileFunc);
+  const { data: profile, loading, execute: fetchProfile } = useApi<any>(fetchProfileFunc);
 
   const { execute: updateProfile, loading: saving } = useApiMutation((data: any) => 
     api.put("/employer/profile", data)
   );
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   useEffect(() => {
     if (profile) {

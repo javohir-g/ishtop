@@ -22,7 +22,7 @@ export function EditProfile() {
   const isOnboarding = query.get("onboarding") === "true";
 
   const fetchFunc = useCallback(() => api.get("/profiles/me"), []);
-  const { data: initialData, loading: loadingProfile } = useApi<ProfileData>(fetchFunc);
+  const { data: initialData, loading: loadingProfile, execute: fetchProfile } = useApi<ProfileData>(fetchFunc);
 
   const [formData, setFormData] = useState<any>({
     full_name: "",
@@ -36,6 +36,10 @@ export function EditProfile() {
   const { execute: updateProfile, loading: saving } = useApiMutation(
     (data: any) => api.put("/profiles/me", data)
   );
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   useEffect(() => {
     if (initialData) {
