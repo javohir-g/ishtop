@@ -71,11 +71,11 @@ export function Landing() {
   }, [controlNavbar]);
 
   const formatSalary = (min?: number, max?: number) => {
-    if (!min && !max) return "Kelishiladi";
-    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} so'm`;
-    if (min) return `${min.toLocaleString()} so'mdan`;
-    if (max) return `${max.toLocaleString()} so'mgacha`;
-    return "Kelishiladi";
+    if (!min && !max) return t("salaryNegotiable");
+    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${t("currency")}`;
+    if (min) return `${min.toLocaleString()} ${t("currency")} ${t("salaryFrom")}`;
+    if (max) return `${max.toLocaleString()} ${t("currency")} ${t("salaryUpTo")}`;
+    return t("salaryNegotiable");
   };
 
   return (
@@ -92,17 +92,17 @@ export function Landing() {
                 onClick={() => navigate("/vacancies")}
                 className="text-primary font-semibold border-b-2 border-primary transition-all duration-300 py-1"
               >
-                Ish topish
+                {t("navJobs")}
               </button>
               <button 
                 onClick={() => navigate("/workers")}
                 className="text-on-surface-variant hover:text-primary transition-all duration-500 font-medium py-1 relative group"
               >
-                Bog'chalar uchun
+                {t("navForKindergartens")}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-500 group-hover:w-full"></span>
               </button>
               <button className="text-on-surface-variant hover:text-primary transition-all duration-500 font-medium py-1 relative group">
-                Biz haqimizda
+                {t("navAbout")}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-500 group-hover:w-full"></span>
               </button>
             </div>
@@ -146,7 +146,7 @@ export function Landing() {
               onClick={() => navigate("/auth")}
               className="text-on-surface-variant font-medium px-4 py-2 hover:text-primary transition-colors duration-200"
             >
-              {t("logout") === "Chiqish" ? "Kirish" : t("logout") === "Выйти" ? "Вход" : "Кириш"}
+              {t("login")}
             </button>
             <button 
               onClick={() => navigate("/auth")}
@@ -291,60 +291,70 @@ export function Landing() {
         {/* 4. 'Faol vakansiyalar' list */}
         <section className="py-24">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-              <div className="animate-in fade-in slide-in-from-bottom duration-500">
-                <h2 className="text-4xl font-extrabold mb-2 font-headline text-on-surface">{t("activeVacanciesTitle")}</h2>
-                <p className="text-on-surface-variant text-lg">{t("activeVacanciesSubtitle")}</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <h2 className="text-4xl font-extrabold mb-3 font-headline text-on-surface tracking-tight">{t("activeVacanciesTitle")}</h2>
+                <p className="text-on-surface-variant text-lg max-w-xl">{t("activeVacanciesSubtitle")}</p>
               </div>
               <button 
                 onClick={() => navigate("/vacancies")}
-                className="text-primary font-bold flex items-center gap-2 hover:underline transition-all group"
+                className="text-primary font-bold flex items-center gap-2 hover:opacity-80 transition-all group py-1 px-2"
               >
                 {t("viewAllVacancies")} 
                 <TrendingUp className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="bg-surface-container-low h-64 rounded-3xl animate-pulse"></div>
+                  <div key={i} className="bg-surface-container-low h-[400px] rounded-3xl animate-pulse"></div>
                 ))
               ) : recentVacancies.length > 0 ? (
                 recentVacancies.map((vacancy) => (
                   <div 
                     key={vacancy.id} 
                     onClick={() => navigate(`/job/${vacancy.id}`)}
-                    className="bg-white/60 backdrop-blur-md p-6 rounded-3xl flex flex-col gap-4 transition-all duration-500 ease-in-out border border-outline-variant/10 hover:border-primary/30 cursor-pointer group"
+                    className="bg-white p-8 rounded-[32px] flex flex-col gap-6 transition-all duration-500 ease-in-out border border-outline-variant/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 cursor-pointer group"
                   >
-                    <div className="flex justify-between items-start">
-                      <div className="w-16 h-16 rounded-2xl bg-surface-container-high overflow-hidden shadow-sm">
+                    <div className="flex justify-between items-center">
+                      <div className="w-14 h-14 rounded-2xl bg-surface-container-high overflow-hidden border border-outline-variant/5">
                          <img 
                           src={vacancy.is_featured ? "https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?q=40&w=200" : "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=40&w=200"} 
                           alt="Kindergarten logo" 
-                          className="w-full h-full object-cover transform transition-transform group-hover:scale-110"
+                          className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                         />
                       </div>
                       {vacancy.is_featured && (
-                        <span className="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Top</span>
+                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" />
+                          Top
+                        </span>
                       )}
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-xl mb-1 group-hover:text-primary transition-colors text-on-surface">{vacancy.title}</h4>
-                      <p className="text-on-surface-variant text-sm mb-4 line-clamp-1">{vacancy.kindergarten?.name || "Nomsiz bog'cha"} • {vacancy.district}</p>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className="bg-surface-container px-3 py-1 rounded-lg text-xs font-medium text-on-surface-variant">To'liq stavka</span>
-                        <span className="bg-primary/5 text-primary px-3 py-1 rounded-lg text-xs font-bold">{formatSalary(vacancy.salary_min, vacancy.salary_max)}</span>
+                    <div className="flex-1 space-y-3">
+                      <h4 className="font-bold text-xl group-hover:text-primary transition-colors text-on-surface line-clamp-1">{vacancy.title}</h4>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-on-surface font-semibold text-sm line-clamp-1">{vacancy.kindergarten?.name || "Nomsiz bog'cha"}</p>
+                        <p className="text-on-surface-variant text-[13px] flex items-center gap-1.5">
+                          <MapPin className="w-4 h-4 text-primary/60" />
+                          {vacancy.district}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        <span className="bg-surface-container px-3 py-1 rounded-lg text-[11px] font-bold text-on-surface-variant uppercase tracking-tighter">{t("fullTime")}</span>
+                        <span className="bg-primary/5 text-primary px-3 py-1 rounded-lg text-[11px] font-black uppercase tracking-tighter">{formatSalary(vacancy.salary_min, vacancy.salary_max)}</span>
                       </div>
                     </div>
-                    <button className="w-full bg-primary/5 group-hover:bg-primary group-hover:text-white text-primary font-bold py-3 rounded-xl transition-all duration-500 active:scale-95 border border-primary/10 group-hover:border-transparent">
+                    <button className="w-full bg-surface-container-high group-hover:bg-primary group-hover:text-white text-on-surface font-bold py-4 rounded-2xl transition-all duration-500 active:scale-95 text-sm uppercase tracking-widest">
                       {t("learnMore")}
                     </button>
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center py-20 text-on-surface-variant font-medium bg-surface-container-low rounded-3xl">
-                  Hozircha faol vakansiyalar mavjud emas.
+                <div className="col-span-full text-center py-24 text-on-surface-variant font-medium bg-surface-container-low rounded-[40px] border-2 border-dashed border-outline-variant/20">
+                  <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                  {t("noVacancies")}
                 </div>
               )}
             </div>
@@ -359,9 +369,9 @@ export function Landing() {
                 <h2 className="text-4xl font-extrabold mb-8 font-headline text-on-surface">{t("whyUs")}</h2>
                 <div className="space-y-8">
                   {[
-                    { icon: ShieldCheck, title: "Ishonchli bog'chalar", desc: "Barcha ish beruvchilar va muassasalar platformamiz tomonidan sinchkovlik bilan tekshiriladi.", color: "primary" },
-                    { icon: Sparkles, title: "AI tavsiyalar", desc: "Sizning malakangizga mos keladigan vakansiyalarni sun'iy intellekt yordamida saralab beramiz.", color: "secondary" },
-                    { icon: Users, title: "Katta hamjamiyat", desc: "10,000 dan ortiq mutaxassislar va bog'chalar bilan muloqot qilish imkoniyati.", color: "primary" }
+                    { icon: ShieldCheck, title: t("benefit1Title"), desc: t("benefit1Desc"), color: "primary" },
+                    { icon: Sparkles, title: t("benefit2Title"), desc: t("benefit2Desc"), color: "secondary" },
+                    { icon: Users, title: t("benefit3Title"), desc: t("benefit3Desc"), color: "primary" }
                   ].map((benefit, i) => (
                     <div key={i} className="flex gap-6 group hover:translate-x-2 transition-transform duration-500 ease-out">
                       <div className={`w-14 h-14 rounded-2xl bg-${benefit.color}/10 flex items-center justify-center text-${benefit.color} shrink-0 group-hover:bg-${benefit.color} group-hover:text-white transition-all duration-500`}>
