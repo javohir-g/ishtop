@@ -1,4 +1,4 @@
-import { Search, MapPin, Clock, TrendingUp, Users, Briefcase, CheckCircle2, ChevronRight, ArrowRight, BadgeCheck, Star, ChevronDown, Sparkles, GraduationCap, Building2, ExternalLink, ShieldCheck } from "lucide-react";
+import { Search, MapPin, Clock, TrendingUp, Users, Briefcase, CheckCircle2, ChevronRight, ArrowRight, BadgeCheck, Star, ChevronDown, Sparkles, GraduationCap, Building2, ExternalLink, ShieldCheck, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "@/app/i18n/useTranslation";
@@ -29,6 +29,7 @@ export function Landing() {
   const { t, language, setLanguage } = useTranslation();
 
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const languages: { code: Language; label: string }[] = [
     { code: "uz-latn", label: "O'zbek (Lotin)" },
@@ -87,7 +88,7 @@ export function Landing() {
             <span className="text-xl font-bold tracking-tight text-primary font-headline cursor-pointer" onClick={() => navigate("/")}>
               Ish-Top
             </span>
-            <div className="hidden md:flex gap-6 items-center">
+            <div className="hidden lg:flex gap-6 items-center">
               <button 
                 onClick={() => navigate("/vacancies")}
                 className="text-primary font-semibold border-b-2 border-primary transition-all duration-300 py-1"
@@ -142,20 +143,75 @@ export function Landing() {
               )}
             </div>
 
+            <div className="hidden lg:flex items-center gap-4">
+              <button 
+                onClick={() => navigate("/auth")}
+                className="text-on-surface-variant font-medium px-4 py-2 hover:text-primary transition-colors duration-200"
+              >
+                {t("login")}
+              </button>
+              <button 
+                onClick={() => navigate("/auth")}
+                className="bg-primary text-white px-6 py-2.5 rounded-xl font-semibold transition-all hover:opacity-90 active:scale-95 duration-300 ease-out border border-primary/20"
+              >
+                {t("registerNow")}
+              </button>
+            </div>
+
+            {/* Mobile Menu Toggle */}
             <button 
-              onClick={() => navigate("/auth")}
-              className="text-on-surface-variant font-medium px-4 py-2 hover:text-primary transition-colors duration-200"
+              className="lg:hidden p-2 text-on-surface-variant hover:bg-surface-container rounded-xl transition-colors"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {t("login")}
-            </button>
-            <button 
-              onClick={() => navigate("/auth")}
-              className="bg-primary text-white px-5 md:px-6 py-2.5 rounded-xl font-semibold transition-all hover:opacity-90 active:scale-95 duration-300 ease-out border border-primary/20"
-            >
-              {t("registerNow")}
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMenuOpen && (
+          <div className="lg:hidden fixed inset-x-0 top-[73px] bg-white/95 backdrop-blur-xl border-b border-outline-variant/10 animate-in slide-in-from-top-4 duration-300 z-40 overflow-hidden shadow-2xl">
+            <div className="p-6 space-y-6">
+              <div className="flex flex-col gap-4">
+                <button 
+                  onClick={() => { navigate("/vacancies"); setIsMenuOpen(false); }}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 text-primary font-bold"
+                >
+                  {t("navJobs")} <ArrowRight className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => { navigate("/workers"); setIsMenuOpen(false); }}
+                  className="p-4 rounded-2xl bg-surface-container text-on-surface font-semibold text-left"
+                >
+                  {t("navForKindergartens")}
+                </button>
+                <button 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-4 rounded-2xl bg-surface-container text-on-surface font-semibold text-left"
+                >
+                  {t("navAbout")}
+                </button>
+              </div>
+
+              <div className="h-px bg-outline-variant/20"></div>
+
+              <div className="flex flex-col gap-4">
+                <button 
+                  onClick={() => { navigate("/auth"); setIsMenuOpen(false); }}
+                  className="p-4 rounded-2xl bg-surface-container-high text-on-surface font-bold text-center"
+                >
+                  {t("login")}
+                </button>
+                <button 
+                  onClick={() => { navigate("/auth"); setIsMenuOpen(false); }}
+                  className="p-4 rounded-2xl bg-primary text-white font-bold text-center shadow-lg shadow-primary/20"
+                >
+                  {t("registerNow")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="pt-20">
