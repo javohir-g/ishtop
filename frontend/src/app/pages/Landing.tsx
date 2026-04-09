@@ -37,7 +37,7 @@ export function Landing() {
   ];
 
   const fetchVacanciesFunc = useCallback(() => 
-    api.get("/vacancies", { params: { per_page: 6, is_featured: true } }), []);
+    api.get("/vacancies", { params: { per_page: 6 } }), []);
   
   const { data: vacancyResponse, loading, execute: fetchVacancies } = useApi<{ items: Vacancy[] }>(fetchVacanciesFunc);
 
@@ -51,6 +51,25 @@ export function Landing() {
 
   const recentVacancies = vacancyResponse?.items || [];
 
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const controlNavbar = useCallback(() => {
+    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+      setShowNavbar(false);
+    } else {
+      setShowNavbar(true);
+    }
+    setLastScrollY(window.scrollY);
+  }, [lastScrollY]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', controlNavbar);
+    return () => {
+      window.removeEventListener('scroll', controlNavbar);
+    };
+  }, [controlNavbar]);
+
   const formatSalary = (min?: number, max?: number) => {
     if (!min && !max) return "Kelishiladi";
     if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} so'm`;
@@ -60,9 +79,9 @@ export function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-surface selection:bg-primary/10">
+    <div className="min-h-screen bg-background font-sans text-on-surface">
       {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-outline-variant/20">
+      <nav className={`fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-outline-variant/10 transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex justify-between items-center px-6 md:px-8 py-4 max-w-7xl mx-auto font-body">
           <div className="flex items-center gap-8">
             <span className="text-xl font-bold tracking-tight text-primary font-headline cursor-pointer" onClick={() => navigate("/")}>
@@ -71,18 +90,20 @@ export function Landing() {
             <div className="hidden md:flex gap-6 items-center">
               <button 
                 onClick={() => navigate("/vacancies")}
-                className="text-primary font-semibold border-b-2 border-primary transition-colors duration-200"
+                className="text-primary font-semibold border-b-2 border-primary transition-all duration-300 py-1"
               >
                 Ish topish
               </button>
               <button 
                 onClick={() => navigate("/workers")}
-                className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-medium"
+                className="text-on-surface-variant hover:text-primary transition-all duration-500 font-medium py-1 relative group"
               >
                 Bog'chalar uchun
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-500 group-hover:w-full"></span>
               </button>
-              <button className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-medium">
+              <button className="text-on-surface-variant hover:text-primary transition-all duration-500 font-medium py-1 relative group">
                 Biz haqimizda
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-500 group-hover:w-full"></span>
               </button>
             </div>
           </div>
@@ -129,7 +150,7 @@ export function Landing() {
             </button>
             <button 
               onClick={() => navigate("/auth")}
-              className="bg-primary text-white px-5 md:px-6 py-2.5 rounded-xl font-semibold transition-transform active:scale-95 duration-150 ease-in-out shadow-lg shadow-primary/20"
+              className="bg-primary text-white px-5 md:px-6 py-2.5 rounded-xl font-semibold transition-all hover:opacity-90 active:scale-95 duration-300 ease-out border border-primary/20"
             >
               {t("registerNow")}
             </button>
@@ -168,16 +189,16 @@ export function Landing() {
             </div>
           </div>
           <div className="relative group perspective-1000">
-            <div className="absolute -top-12 -left-12 w-64 h-64 bg-secondary-container/30 rounded-full blur-3xl -z-10 group-hover:bg-secondary-container/40 transition-colors"></div>
-            <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl -z-10 group-hover:bg-primary-container/30 transition-colors"></div>
+            <div className="absolute -top-12 -left-12 w-64 h-64 bg-secondary-container/10 rounded-full -z-10"></div>
+            <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-primary-container/10 rounded-full -z-10"></div>
             <img 
-              className="rounded-3xl shadow-2xl w-full aspect-square object-cover transform transition-transform duration-500 group-hover:scale-[1.02]" 
+              className="rounded-3xl w-full aspect-square object-cover transform transition-transform duration-700 ease-in-out group-hover:scale-[1.01] border border-outline-variant/10" 
               src="https://paristeachersclub.com/wp-content/uploads/2022/11/childrens-books.png" 
               alt="Kindergarten teacher"
             />
             {/* Floating Card 1 */}
-            <div className="absolute top-8 -right-4 md:-right-8 bg-white/70 backdrop-blur-xl p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce-slow border border-white/50">
-              <div className="w-10 h-10 bg-tertiary rounded-full flex items-center justify-center text-white shadow-lg shadow-tertiary/20">
+            <div className="absolute top-8 -right-4 md:-right-8 bg-white/70 backdrop-blur-xl p-4 rounded-2xl flex items-center gap-3 animate-bounce-slow border border-outline-variant/20">
+              <div className="w-10 h-10 bg-tertiary rounded-full flex items-center justify-center text-white">
                 <BadgeCheck className="w-5 h-5" />
               </div>
               <div>
@@ -189,30 +210,20 @@ export function Landing() {
         </section>
 
         {/* 2. Statistics bar */}
-        <section className="bg-primary py-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-container/20 to-transparent"></div>
-          <div className="max-w-7xl mx-auto px-8 grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
-            <div className="text-center text-white">
-              <p className="text-4xl font-extrabold mb-1 font-headline text-white">
-                {stats?.workers_count !== undefined ? `${stats.workers_count}+` : "1500+"}
-              </p>
-              <p className="text-white/80 font-medium text-sm md:text-base">{t("statsCandidates")}</p>
-            </div>
-            <div className="text-center text-white">
-              <p className="text-4xl font-extrabold mb-1 font-headline text-white">
-                {stats?.kindergartens_count !== undefined ? `${stats.kindergartens_count}+` : "450+"}
-              </p>
-              <p className="text-white/80 font-medium text-sm md:text-base">{t("statsPartners")}</p>
-            </div>
-            <div className="text-center text-white">
-              <p className="text-4xl font-extrabold mb-1 font-headline text-white">
-                {stats?.vacancies_count !== undefined ? `${stats.vacancies_count}+` : "800+"}
-              </p>
-              <p className="text-white/80 font-medium text-sm md:text-base">{t("statsVacancies")}</p>
-            </div>
-            <div className="text-center text-white">
-              <p className="text-4xl font-extrabold mb-1 font-headline text-white">98%</p>
-              <p className="text-white/80 font-medium text-sm md:text-base">{t("statsSuccess")}</p>
+        <section className="bg-primary pt-10 pb-16 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-8 relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+              {[
+                { label: t("statsCandidates"), value: stats?.workers_count || "2,500+" },
+                { label: t("statsPartners"), value: stats?.kindergartens_count || "450+" },
+                { label: t("statsVacancies"), value: stats?.vacancies_count || "1,200+" },
+                { label: t("statsSuccess"), value: "94%" }
+              ].map((stat, i) => (
+                <div key={i} className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-[200ms]" style={{ animationDelay: `${i * 150}ms` }}>
+                  <div className="text-3xl md:text-5xl font-extrabold mb-3 text-white tracking-tight">{stat.value}</div>
+                  <div className="text-white/70 text-sm md:text-base font-medium tracking-wide uppercase">{stat.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -226,8 +237,8 @@ export function Landing() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Candidates */}
-              <div className="bg-white/40 backdrop-blur-md p-10 rounded-3xl group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-white/60 hover:border-primary/20">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-8 group-hover:bg-primary group-hover:text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/30">
+              <div className="bg-white/40 backdrop-blur-md p-10 rounded-3xl group hover:border-primary/30 transition-all duration-500 ease-in-out border border-outline-variant/10">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-8 group-hover:bg-primary group-hover:text-white transition-all duration-500 ease-in-out">
                   <GraduationCap className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4 font-headline text-on-surface">{t("forJobSeekers")}</h3>
@@ -250,20 +261,20 @@ export function Landing() {
                 </button>
               </div>
               {/* Employers */}
-              <div className="bg-white/40 backdrop-blur-md p-10 rounded-3xl group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-white/60 hover:border-secondary/20">
-                <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary mb-8 group-hover:bg-secondary group-hover:text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-secondary/30">
+              <div className="bg-white/40 backdrop-blur-md p-10 rounded-3xl group hover:border-secondary/30 transition-all duration-500 ease-in-out border border-outline-variant/10">
+                <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary mb-8 group-hover:bg-secondary group-hover:text-white transition-all duration-500 ease-in-out">
                   <Building2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4 font-headline text-on-surface">{t("forEmployers")}</h3>
                 <p className="text-on-surface-variant mb-6 leading-relaxed">{t("forEmployersDesc")}</p>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center gap-3">
-                    <CheckCircle2 className="text-secondary w-5 h-5 transition-colors group-hover:text-white" />
-                    <span className="font-medium text-on-surface group-hover:text-secondary transition-colors">{t("findBestCandidates")}</span>
+                    <CheckCircle2 className="text-secondary w-5 h-5 transition-colors group-hover:text-secondary/70" />
+                    <span className="font-medium text-on-surface transition-colors">{t("findBestCandidates")}</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle2 className="text-secondary w-5 h-5 transition-colors group-hover:text-white" />
-                    <span className="font-medium text-on-surface group-hover:text-secondary transition-colors">{t("communicateWithEmployers")}</span>
+                    <CheckCircle2 className="text-secondary w-5 h-5 transition-colors group-hover:text-secondary/70" />
+                    <span className="font-medium text-on-surface transition-colors">{t("communicateWithEmployers")}</span>
                   </li>
                 </ul>
                 <button 
@@ -304,7 +315,7 @@ export function Landing() {
                   <div 
                     key={vacancy.id} 
                     onClick={() => navigate(`/job/${vacancy.id}`)}
-                    className="bg-white/60 backdrop-blur-md p-6 rounded-3xl flex flex-col gap-4 hover:shadow-2xl transition-all border border-white/80 hover:border-primary/20 cursor-pointer group"
+                    className="bg-white/60 backdrop-blur-md p-6 rounded-3xl flex flex-col gap-4 transition-all duration-500 ease-in-out border border-outline-variant/10 hover:border-primary/30 cursor-pointer group"
                   >
                     <div className="flex justify-between items-start">
                       <div className="w-16 h-16 rounded-2xl bg-surface-container-high overflow-hidden shadow-sm">
@@ -326,8 +337,8 @@ export function Landing() {
                         <span className="bg-primary/5 text-primary px-3 py-1 rounded-lg text-xs font-bold">{formatSalary(vacancy.salary_min, vacancy.salary_max)}</span>
                       </div>
                     </div>
-                    <button className="w-full bg-primary/5 group-hover:bg-primary group-hover:text-white text-primary font-bold py-3 rounded-xl transition-all active:scale-95 shadow-sm group-hover:shadow-primary/20">
-                      Batafsil
+                    <button className="w-full bg-primary/5 group-hover:bg-primary group-hover:text-white text-primary font-bold py-3 rounded-xl transition-all duration-500 active:scale-95 border border-primary/10 group-hover:border-transparent">
+                      {t("learnMore")}
                     </button>
                   </div>
                 ))
@@ -349,15 +360,15 @@ export function Landing() {
                 <div className="space-y-8">
                   {[
                     { icon: ShieldCheck, title: "Ishonchli bog'chalar", desc: "Barcha ish beruvchilar va muassasalar platformamiz tomonidan sinchkovlik bilan tekshiriladi.", color: "primary" },
-                    { icon: Clock, title: "Tezkor aloqa", desc: "To'g'ridan-to'g'ri chat orqali ish beruvchi bilan tezkor bog'lanish va suhbat tayinlash imkoniyati.", color: "tertiary" },
-                    { icon: TrendingUp, title: "Professional rivojlanish", desc: "Platforma foydalanuvchilari uchun eksklyuziv master-klasslar va sertifikatlash dasturlari.", color: "secondary" }
+                    { icon: Sparkles, title: "AI tavsiyalar", desc: "Sizning malakangizga mos keladigan vakansiyalarni sun'iy intellekt yordamida saralab beramiz.", color: "secondary" },
+                    { icon: Users, title: "Katta hamjamiyat", desc: "10,000 dan ortiq mutaxassislar va bog'chalar bilan muloqot qilish imkoniyati.", color: "primary" }
                   ].map((benefit, i) => (
-                    <div key={i} className="flex gap-4 group">
-                      <div className={`w-12 h-12 bg-${benefit.color}/10 rounded-2xl flex items-center justify-center text-${benefit.color} shrink-0 group-hover:scale-110 transition-transform shadow-sm`}>
-                        <benefit.icon className="w-6 h-6" />
+                    <div key={i} className="flex gap-6 group hover:translate-x-2 transition-transform duration-500 ease-out">
+                      <div className={`w-14 h-14 rounded-2xl bg-${benefit.color}/10 flex items-center justify-center text-${benefit.color} shrink-0 group-hover:bg-${benefit.color} group-hover:text-white transition-all duration-500`}>
+                        <benefit.icon className="w-7 h-7" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-lg mb-1 text-on-surface">{benefit.title}</h4>
+                        <h4 className="text-xl font-bold mb-2 text-on-surface group-hover:text-primary transition-colors duration-500">{benefit.title}</h4>
                         <p className="text-on-surface-variant leading-relaxed">{benefit.desc}</p>
                       </div>
                     </div>
@@ -365,22 +376,22 @@ export function Landing() {
                 </div>
               </div>
               <div className="relative">
-                <div className="bg-primary/5 rounded-[48px] p-8 md:p-12 relative overflow-hidden backdrop-blur-md border border-white/50 shadow-inner">
+                <div className="bg-primary/5 rounded-[48px] p-8 md:p-12 relative overflow-hidden border border-outline-variant/10">
                   <div className="relative z-10 space-y-6">
-                    <div className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-2xl max-w-sm ml-auto transform -rotate-2 hover:rotate-0 transition-transform duration-500 border border-white/10">
+                    <div className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl text-on-surface max-w-sm ml-auto border border-outline-variant/10">
                       <div className="flex text-tertiary mb-4">
                         {Array.from({length: 5}).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                       </div>
                       <p className="text-sm font-medium mb-4 italic text-on-surface-variant leading-relaxed">"Ish-Top orqali 2 hafta ichida o'zim orzu qilgan ishni topdim. Rahmat!"</p>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center text-primary font-bold">N</div>
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">N</div>
                         <div>
                           <p className="font-bold text-sm text-on-surface">Nilufar A.</p>
                           <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Tarbiyachi</p>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-primary/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl text-white max-w-sm transform rotate-1 hover:rotate-0 transition-transform duration-500 relative border border-white/20">
+                    <div className="bg-primary/90 p-8 rounded-3xl text-white max-w-sm relative border border-white/10">
                       <div className="absolute top-4 right-4 text-white/20">
                         <Users className="w-12 h-12" />
                       </div>
@@ -405,7 +416,7 @@ export function Landing() {
                 { q: t("faq2Q"), a: t("faq2A") },
                 { q: t("faq3Q"), a: t("faq3A") }
               ].map((faq, i) => (
-                <div key={i} className="bg-white/40 backdrop-blur-md rounded-2xl overflow-hidden border border-white/60 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
+                <div key={i} className="bg-white/40 backdrop-blur-md rounded-2xl overflow-hidden border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
                   <details className="group">
                     <summary className="w-full px-8 py-6 text-left flex justify-between items-center cursor-pointer list-none font-bold text-lg text-on-surface">
                       {faq.q}
@@ -423,15 +434,15 @@ export function Landing() {
 
         {/* 7. Final CTA */}
         <section className="max-w-7xl mx-auto px-6 md:px-8 mb-24">
-          <div className="bg-primary rounded-[48px] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-2xl shadow-primary/30 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-container to-primary-container/80 transition-all duration-700 group-hover:scale-105"></div>
+          <div className="bg-primary rounded-[48px] p-12 md:p-20 text-center text-white relative overflow-hidden group border border-outline-variant/10">
+            <div className="absolute inset-0 bg-primary"></div>
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="text-4xl md:text-5xl font-extrabold mb-6 font-headline leading-tight text-white">{t("finalCtaTitle")}</h2>
               <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">{t("finalCtaSubtitle")}</p>
               <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
                 <button 
                   onClick={() => navigate("/auth")}
-                  className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-black/10 transition-all hover:scale-105 active:scale-95"
+                  className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-lg transition-all duration-500 ease-in-out hover:bg-white/90 active:scale-95"
                 >
                   {t("registerNow")}
                 </button>
@@ -440,9 +451,6 @@ export function Landing() {
                 </button>
               </div>
             </div>
-            {/* Decorative elements */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-x-1/4 translate-y-1/4"></div>
           </div>
         </section>
       </main>
@@ -464,9 +472,18 @@ export function Landing() {
           <div className="space-y-6">
             <h5 className="font-bold text-on-surface text-lg">{t("platform")}</h5>
             <ul className="space-y-4">
-              <li><button onClick={() => navigate("/vacancies")} className="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">{t("findJob")}</button></li>
-              <li><button onClick={() => navigate("/workers")} className="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">{t("forKindergartens")}</button></li>
-              <li><button className="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">{t("searchOnMap")}</button></li>
+              <li><button onClick={() => navigate("/vacancies")} className="text-on-surface-variant hover:text-primary transition-all duration-300 text-sm font-medium relative group">
+                {t("findJob")}
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </button></li>
+              <li><button onClick={() => navigate("/workers")} className="text-on-surface-variant hover:text-primary transition-all duration-300 text-sm font-medium relative group">
+                {t("forKindergartens")}
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </button></li>
+              <li><button className="text-on-surface-variant hover:text-primary transition-all duration-300 text-sm font-medium relative group">
+                {t("searchOnMap")}
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </button></li>
             </ul>
           </div>
           <div className="space-y-6">

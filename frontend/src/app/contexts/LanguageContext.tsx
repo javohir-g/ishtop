@@ -13,7 +13,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     // Get language from localStorage or default to Russian
     const saved = localStorage.getItem("app-language");
-    return (saved as Language) || "ru";
+    return (saved as Language) || "uz-latn";
   });
 
   const setLanguage = (lang: Language) => {

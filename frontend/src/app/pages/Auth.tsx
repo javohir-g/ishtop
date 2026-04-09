@@ -1,4 +1,4 @@
-import { IconArrowLeft, IconBrandTelegram, IconShieldCheck } from "@tabler/icons-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useNavigate } from "react-router";
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "@/app/i18n/useTranslation";
@@ -74,94 +74,63 @@ export function Auth() {
     };
   }, [handleAuthSuccess]);
 
-  const handleDemoLogin = (role: string) => {
-     setLoading(true);
-     // Use dev endpoint for testing
-     api.post(`/auth/dev-token?telegram_id=${Math.floor(Math.random() * 1000000)}&role=${role}`)
-       .then((res: { data: any }) => handleAuthSuccess(res.data))
-       .catch(() => setError("Ошибка демо входа"))
-       .finally(() => setLoading(false));
-  };
+
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md animate-in fade-in duration-500">
         <button
           onClick={() => navigate("/")}
-          className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          className="mb-8 flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium group"
         >
-          <IconArrowLeft className="w-5 h-5" stroke={2} />
+          <IconArrowLeft className="w-5 h-5 transition-transform" stroke={2} />
           {t("back")}
         </button>
 
-        <div className="text-center">
-          <div className="mb-8 flex justify-center">
-            <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center animate-pulse-slow">
-              <IconBrandTelegram className="w-12 h-12 text-white" stroke={2} />
-            </div>
-          </div>
+        <div className="bg-white rounded-[32px] p-8 md:p-10 border border-outline-variant/20">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-on-surface mb-4 font-headline uppercase tracking-wide">
+              {loading ? t("authorizing") : t("signIn")}
+            </h1>
 
-          <h1 className="text-2xl font-semibold text-gray-900 mb-3">
-            {loading ? "Авторизация..." : "Вход в систему"}
-          </h1>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100">
-              {error}
-            </div>
-          )}
-
-          {!loading && (
-            <>
-              <p className="text-gray-600 mb-8">
-                Авторизуйтесь через Telegram для безопасного доступа к вашему профилю
-              </p>
-
-              <div id="telegram-widget-container" className="flex justify-center mb-8">
-                {/* Telegram Widget will be injected here */}
+            {error && (
+              <div className="mb-8 p-4 bg-destructive/5 text-destructive rounded-xl text-sm font-medium border border-destructive/10">
+                {t(error === "Ошибка авторизации через Telegram WebApp" ? "authErrorWebApp" : "authErrorWidget" as any)}
               </div>
+            )}
 
-              <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-100"></div>
+            {!loading && (
+              <div className="space-y-8">
+                <p className="text-on-surface-variant leading-relaxed">
+                  {t("authSubtitle")}
+                </p>
+
+                <div id="telegram-widget-container" className="flex justify-center">
+                  {/* Telegram Widget will be injected here */}
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-400 font-medium italic">или демо вход</span>
+
+                <div className="pt-8 border-t border-outline-variant/10 text-xs text-on-surface-variant leading-relaxed font-medium">
+                  <p className="opacity-70">
+                    {t("authFooterTerms")}{" "}
+                    <button onClick={() => navigate("/terms")} className="text-primary hover:underline">
+                      {t("termsOfUse").toLowerCase()}
+                    </button>{" "}
+                    {t("authFooterAnd")}{" "}
+                    <button onClick={() => navigate("/privacy")} className="text-primary hover:underline">
+                      {t("privacyPolicy").toLowerCase()}
+                    </button>
+                    {t("authFooterEnd")}
+                  </p>
                 </div>
               </div>
+            )}
 
-              <div className="space-y-3 mb-8">
-                <button
-                  onClick={() => handleDemoLogin("job_seeker")}
-                  className="w-full bg-white border border-blue-600 text-blue-600 py-4 px-6 rounded-xl font-bold hover:bg-blue-50 transition-all active:scale-95"
-                >
-                  Демо: Я ищу работу
-                </button>
-                
-                <button
-                  onClick={() => handleDemoLogin("kindergarten_employer")}
-                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95"
-                >
-                  Демо: Я ищу сотрудников
-                </button>
-
-                <button
-                  onClick={() => handleDemoLogin("admin")}
-                  className="w-full bg-slate-900 text-white py-4 px-6 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
-                >
-                  <IconShieldCheck className="w-5 h-5 text-blue-400" />
-                  Вход как Администратор
-                </button>
+            {loading && (
+              <div className="py-20 flex flex-col items-center gap-4">
+                <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                <p className="text-primary text-sm font-bold uppercase tracking-widest">{t("authorizing")}</p>
               </div>
-            </>
-          )}
-
-          <div className="text-sm text-gray-500">
-            <p>
-              Продолжая, вы соглашаетесь с{" "}
-              <button onClick={() => navigate("/terms")} className="text-blue-600 hover:underline">условиями</button>{" "}
-              и <button onClick={() => navigate("/privacy")} className="text-blue-600 hover:underline">политикой</button>
-            </p>
+            )}
           </div>
         </div>
       </div>

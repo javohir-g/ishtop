@@ -139,6 +139,14 @@ export const translations = {
     secureSystem: "Xavfsiz tizim",
     verified: "Tasdiqlangan",
     premiumKindergarten: "Premium Bog'cha",
+    signIn: "Tizimga kirish",
+    authSubtitle: "Profilizga xavfsiz kirish uchun Telegram orqali avtorizatsiyadan o'ting",
+    authorizing: "Avtorizatsiya...",
+    authFooterTerms: "Davom etish orqali siz",
+    authFooterAnd: "va",
+    authFooterEnd: "ga rozilik bildirasiz",
+    authErrorWebApp: "Telegram WebApp orqali avtorizatsiya qilishda xatolik",
+    authErrorWidget: "Vidjet orqali avtorizatsiya qilishda xatolik",
   },
   
   "uz-cyrl": {
@@ -281,6 +289,14 @@ export const translations = {
     secureSystem: "Хавфсиз тизим",
     verified: "Тасдиқланган",
     premiumKindergarten: "Премиум Боғча",
+    signIn: "Тизимга кириш",
+    authSubtitle: "Профилизга хавфсиз кириш учун Telegram орқали авторизациядан ўтинг",
+    authorizing: "Авторизация...",
+    authFooterTerms: "Давом этиш орқали сиз",
+    authFooterAnd: "ва",
+    authFooterEnd: "га розилик билдирасиз",
+    authErrorWebApp: "Telegram WebApp орқали авторизация қилишда хатолик",
+    authErrorWidget: "Виджет орқали авторизация қилишда хатолик",
   },
   
   ru: {
@@ -423,6 +439,14 @@ export const translations = {
     secureSystem: "Безопасная система",
     verified: "Проверено",
     premiumKindergarten: "Премиум Сад",
+    signIn: "Вход в систему",
+    authSubtitle: "Авторизуйтесь через Telegram для безопасного доступа к вашему профилю",
+    authorizing: "Авторизация...",
+    authFooterTerms: "Продолжая, вы соглашаетесь с",
+    authFooterAnd: "и",
+    authFooterEnd: "",
+    authErrorWebApp: "Ошибка авторизации через Telegram WebApp",
+    authErrorWidget: "Ошибка авторизации через Виджет",
   }
 };
 
