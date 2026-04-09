@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html lang="uz"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kindred Core - Bog'cha xodimlari uchun professional platforma</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#bc4800",
+                    "on-primary-fixed": "#00174b",
+                    "on-secondary-fixed": "#00174b",
+                    "surface-container-low": "#f1f3ff",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#495c95",
+                    "on-surface": "#141b2b",
+                    "on-tertiary-fixed": "#360f00",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "surface": "#f9f9ff",
+                    "surface-bright": "#f9f9ff",
+                    "surface-variant": "#dce2f7",
+                    "outline-variant": "#c3c6d7",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-primary": "#ffffff",
+                    "primary-container": "#2563eb",
+                    "on-error-container": "#93000a",
+                    "background": "#f9f9ff",
+                    "on-surface-variant": "#434655",
+                    "primary-fixed": "#dbe1ff",
+                    "inverse-on-surface": "#edf0ff",
+                    "secondary-fixed": "#dbe1ff",
+                    "inverse-surface": "#293040",
+                    "tertiary-fixed": "#ffdbcd",
+                    "surface-container": "#e9edff",
+                    "outline": "#737686",
+                    "surface-container-high": "#e1e8fd",
+                    "on-primary-container": "#eeefff",
+                    "primary": "#004ac6",
+                    "on-tertiary-container": "#ffede6",
+                    "tertiary": "#943700",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary-container": "#acbfff",
+                    "surface-tint": "#0053db",
+                    "on-background": "#141b2b",
+                    "surface-dim": "#d3daef",
+                    "on-secondary-fixed-variant": "#31447b",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-container-highest": "#dce2f7",
+                    "on-secondary-container": "#394c84",
+                    "secondary-fixed-dim": "#b4c5ff",
+                    "inverse-primary": "#b4c5ff",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Be Vietnam Pro"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f9f9ff; color: #141b2b; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-nav { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-blue-700 dark:text-blue-400">Kindred Core</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-blue-700 dark:text-blue-300 font-semibold border-b-2 border-blue-600 transition-colors duration-200" href="#">Ish topish</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors duration-200" href="#">Bog'chalar uchun</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors duration-200" href="#">Biz haqimizda</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-600 dark:text-slate-400 font-medium px-4 py-2 hover:text-blue-600 transition-colors duration-200">Kirish</button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-[12px] font-semibold transition-transform active:scale-95 duration-150 ease-in-out shadow-lg shadow-primary/20">Ro'yxatdan o'tish</button>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- 1. Enhanced Hero Section -->
+<section class="max-w-7xl mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 bg-primary-container/10 px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="text-primary font-semibold text-sm">O'zbekistondagi №1 bog'cha xodimlari platformasi</span>
+</div>
+<h1 class="text-6xl font-extrabold text-on-surface leading-[1.1] tracking-tight">
+                    Kelajak avlod ustozlarini <span class="text-primary bg-clip-text">ideal ish</span> bilan birlashtiramiz
+                </h1>
+<p class="text-lg text-on-surface-variant max-w-lg leading-relaxed">
+                    Sizning malakangizga mos keladigan eng yaxshi bog'chalarni toping yoki jamoangiz uchun professional tarbiyachilarni tanlang.
+                </p>
+<div class="flex items-center gap-4">
+<button class="bg-primary hover:bg-primary-container text-white px-8 py-4 rounded-[12px] font-bold flex items-center gap-2 transition-all shadow-xl shadow-primary/25">
+                        Ish qidirishni boshlash
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="bg-surface-container-high text-primary px-8 py-4 rounded-[12px] font-bold hover:bg-surface-container transition-all">
+                        Bog'cha qo'shish
+                    </button>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-12 -left-12 w-64 h-64 bg-secondary-container/30 rounded-full blur-3xl -z-10"></div>
+<div class="absolute -bottom-12 -right-12 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl -z-10"></div>
+<img class="rounded-[32px] shadow-2xl w-full aspect-square object-cover" data-alt="Warm and friendly kindergarten teacher playing with diverse young children in a modern sunlit classroom with natural wood furniture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-webW5ywDZk-6l1aG151_e3tNE3WJlRywy51INBC5cDZRWDG3EV_Yfpbtt-OPZTRRTymXV8-CwaORe0tQSQqEdFfilj2l9dygNiYqxLq5iOXIsk_eMQoqX3vSscLyWWGNDJrxyZYvBf2pj_HpxnDjbXZczY7oYxuC903V5pPWcNZVvr2RXYvnHC2ErMFibVLt7Bqw6m8MD0WnoQElEh76DAJOZa-P5G3Q54I_-69mcAaZk2JhJOzEi5GRj3FaglAwtkoucCV5Qf8"/>
+<!-- Floating Card 1 -->
+<div class="absolute top-8 -right-8 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce-slow">
+<div class="w-10 h-10 bg-tertiary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined">verified</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">Verified Employer</p>
+<p class="font-bold text-sm">Premium Kindergarten</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. Statistics bar -->
+<section class="bg-primary py-12">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="text-center text-on-primary">
+<p class="text-4xl font-extrabold mb-1">5000+</p>
+<p class="text-on-primary-container/80 font-medium">Faol foydalanuvchilar</p>
+</div>
+<div class="text-center text-on-primary">
+<p class="text-4xl font-extrabold mb-1">1200+</p>
+<p class="text-on-primary-container/80 font-medium">Hamkor bog'chalar</p>
+</div>
+<div class="text-center text-on-primary">
+<p class="text-4xl font-extrabold mb-1">3500+</p>
+<p class="text-on-primary-container/80 font-medium">Muvaffaqiyatli ishlar</p>
+</div>
+<div class="text-center text-on-primary">
+<p class="text-4xl font-extrabold mb-1">98%</p>
+<p class="text-on-primary-container/80 font-medium">Ijobiy natija</p>
+</div>
+</div>
+</section>
+<!-- 2. 'Kimlar uchun?' section -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-extrabold mb-4">Kimlar uchun?</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Platformamiz ta'lim sohasining har ikki tomoni uchun qulay va samarali yechimlar taqdim etadi.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Candidates -->
+<div class="bg-surface-container-lowest p-10 rounded-[32px] group hover:scale-[1.02] transition-transform duration-300">
+<div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-8 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">school</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Ish izlovchilar uchun</h3>
+<p class="text-on-surface-variant mb-6 leading-relaxed">O'zingizga qulay lokatsiya, munosib ish haqi va professional o'sish imkoniyatiga ega bo'lgan bo'sh ish o'rinlarini toping.</p>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+<span class="font-medium">Shaxsiy rezyume yaratish</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+<span class="font-medium">O'quv kurslari va treninglar</span>
+</li>
+</ul>
+<a class="text-primary font-bold inline-flex items-center gap-2 group-hover:underline" href="#">Batafsil ma'lumot <span class="material-symbols-outlined">chevron_right</span></a>
+</div>
+<!-- Employers -->
+<div class="bg-surface-container-lowest p-10 rounded-[32px] group hover:scale-[1.02] transition-transform duration-300">
+<div class="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary mb-8 group-hover:bg-secondary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">corporate_fare</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Ish beruvchilar uchun</h3>
+<p class="text-on-surface-variant mb-6 leading-relaxed">Bog'changiz uchun eng yaxshi mutaxassislarni tez va oson toping. Nomzodlarni filterlang va suhbatga chaqiring.</p>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-xl">check_circle</span>
+<span class="font-medium">Vakansiyalarni bepul joylash</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-xl">check_circle</span>
+<span class="font-medium">ATS boshqaruv tizimi</span>
+</li>
+</ul>
+<a class="text-secondary font-bold inline-flex items-center gap-2 group-hover:underline" href="#">Batafsil ma'lumot <span class="material-symbols-outlined">chevron_right</span></a>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. 'Qanday ishlaydi?' step-by-step -->
+<section class="py-24">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex items-end justify-between mb-16">
+<div>
+<h2 class="text-4xl font-extrabold mb-4">Qanday ishlaydi?</h2>
+<p class="text-on-surface-variant max-w-lg">Orzuingizdagi ishni topish uchun atigi 3 ta qadam kifoya.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Line connector -->
+<div class="hidden md:block absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant/30 -z-10 translate-y-[-50px]"></div>
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-surface-container-high rounded-full flex items-center justify-center text-primary font-bold text-2xl mb-8 border-4 border-surface shadow-lg">1</div>
+<h4 class="text-xl font-bold mb-4">Ro'yxatdan o'tish</h4>
+<p class="text-on-surface-variant">O'zingiz haqingizda ma'lumot kiriting va professional profil yarating.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-surface-container-high rounded-full flex items-center justify-center text-primary font-bold text-2xl mb-8 border-4 border-surface shadow-lg">2</div>
+<h4 class="text-xl font-bold mb-4">Vakansiyalarni ko'rib chiqish</h4>
+<p class="text-on-surface-variant">Filtrlar yordamida o'zingizga mos bo'lgan vakansiyalarni tanlang.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-primary text-on-primary rounded-full flex items-center justify-center font-bold text-2xl mb-8 border-4 border-surface shadow-lg">3</div>
+<h4 class="text-xl font-bold mb-4">Suhbatga yozilish</h4>
+<p class="text-on-surface-variant">Ariza yuboring va ish beruvchi bilan to'g'ridan-to'g'g'ri bog'laning.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. 'Faol vakansiyalar' list -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex justify-between items-center mb-12">
+<h2 class="text-4xl font-extrabold">Faol vakansiyalar</h2>
+<button class="text-primary font-bold flex items-center gap-1 hover:underline">Barcha vakansiyalar <span class="material-symbols-outlined">open_in_new</span></button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Job Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] flex gap-6 hover:shadow-lg transition-shadow border border-transparent hover:border-primary/10">
+<img class="w-24 h-24 rounded-2xl object-cover" data-alt="Modern colorful kindergarten facade with glass doors and a secure playground area" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqmHRK36SauU0ietTxXPSlC4Cl1H-bqFs1RwFQjzuFOCi4RYhbn5S7qHazCNujTaZqkqmgnyz5AsnnHrvCsiElkD2puxItqsCdQTFRNZY5XSzuLPaifeRjQK5PJ4GshK4k3zvcBelmLuM29XB6C9ZHHL7DQZPWkuEbCEOL8AIquPunLIbxDTl0T5YirLxo-1CLiZUtH6MNyemSZw15KXxk8gEayntpsU5t7_fGX6bIeHU2NIc_0ifTCvASBatmapq1niwyD2b1ITw"/>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-xl">Ingliz tili tarbiyachisi</h4>
+<span class="bg-tertiary-container/10 text-tertiary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Yangi</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">"Sunny Kids" MTM • Toshkent sh., Chilonzor</p>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-surface-container px-3 py-1 rounded-lg text-xs font-medium">To'liq stavka</span>
+<span class="bg-surface-container px-3 py-1 rounded-lg text-xs font-medium">4 mln - 6 mln so'm</span>
+</div>
+<button class="w-full bg-primary/5 hover:bg-primary hover:text-white text-primary font-bold py-2 rounded-xl transition-colors">Ariza topshirish</button>
+</div>
+</div>
+<!-- Job Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] flex gap-6 hover:shadow-lg transition-shadow border border-transparent hover:border-primary/10">
+<img class="w-24 h-24 rounded-2xl object-cover" data-alt="Well-equipped indoor kids playroom with Montessori educational toys and soft flooring" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBktnJzsbffEcvGbt254w54ZG-MxofIcfb6NJX9aL5hL7_tuuS8A9wfmx36Wb3drpGXtDPxWZz7jI3xSu3k9EhhI6SvUR7_O1lUxn9AN9vTIAUTVgIPHQ8HW38OiqTzQVBMPLTKCiZqQSmCms4119VQO_qpYJFVyJZ_85hWgZfivrD4b9U73kjr1VEXgwz13AaPRtXlQCOhBubfQYdRYy1B2GLSLcdQKtuE0WAKfPy4lkgFsSprG5hl3mz0V773O50OOkekpZZlCsA"/>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-xl">Logoped-defektolog</h4>
+<span class="bg-secondary-container/20 text-secondary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Urgent</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">"Ziyo Makon" bog'chasi • Toshkent sh., Yunusobod</p>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-surface-container px-3 py-1 rounded-lg text-xs font-medium">Yarim stavka</span>
+<span class="bg-surface-container px-3 py-1 rounded-lg text-xs font-medium">5 mln - 8 mln so'm</span>
+</div>
+<button class="w-full bg-primary/5 hover:bg-primary hover:text-white text-primary font-bold py-2 rounded-xl transition-colors">Ariza topshirish</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. 'Nega bizni tanlashadi?' benefits -->
+<section class="py-24">
+<div class="max-w-7xl mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div>
+<h2 class="text-4xl font-extrabold mb-8">Nega aynan bizni tanlashadi?</h2>
+<div class="space-y-8">
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Ishonchli bog'chalar</h4>
+<p class="text-on-surface-variant">Barcha ish beruvchilar va muassasalar platformamiz tomonidan sinchkovlik bilan tekshiriladi.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Tezkor aloqa</h4>
+<p class="text-on-surface-variant">To'g'ridan-to'g'ri chat orqali ish beruvchi bilan tezkor bog'lanish va suhbat tayinlash imkoniyati.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Professional rivojlanish</h4>
+<p class="text-on-surface-variant">Platforma foydalanuvchilari uchun eksklyuziv master-klasslar va sertifikatlash dasturlari.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-primary/5 rounded-[48px] p-12 relative overflow-hidden">
+<div class="relative z-10">
+<div class="bg-white p-6 rounded-2xl shadow-xl mb-6 max-w-sm ml-auto">
+<p class="text-sm font-medium mb-4 italic">"Kindred Core orqali 2 hafta ichida o'zim orzu qilgan ishni topdim. Rahmat!"</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200"></div>
+<div>
+<p class="font-bold text-sm">Nilufar Abduvaliyeva</p>
+<p class="text-xs text-on-surface-variant">Tarbiyachi</p>
+</div>
+</div>
+</div>
+<div class="bg-primary p-8 rounded-3xl shadow-2xl text-white max-w-sm">
+<h4 class="text-3xl font-bold mb-2">100%</h4>
+<p class="opacity-80">Ma'lumotlar xavfsizligi kafolati va professional yondashuv.</p>
+</div>
+</div>
+<!-- Abstract shapes -->
+<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. 'Mijozlarimiz fikri' -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<h2 class="text-4xl font-extrabold mb-16 text-center">Foydalanuvchilarimiz fikri</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-surface-container-lowest p-8 rounded-[32px] shadow-sm">
+<div class="flex text-tertiary mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-on-surface-variant mb-8 leading-relaxed">"Bog'chamiz uchun qisqa vaqt ichida juda malakali mutaxassis topdik. Tizim juda qulay va barchasi tushunarli."</p>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Professional portrait of a middle-aged woman, smiling, educational administrator style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnGFVlSTOXoGQEJeDanVkyLIWhGb6m6PCVCCDA8fa21cf2VHZa4TZNy2BDIAbi_M2Q3TCkmWVaIxv5frbtUoKw6ImLKYj7OkWbQ9lUxpl6EEqiOy70DdOMEv1EA8oXDdemGkd9uhAUqUS3OaTeYlicSf4wvHkBUOs_PPRgD30hNEgPrmYeCkQwhM3Vyx2gZUCgn4qLssb853OLwAfQ7tx3mIPC13hmts5ytxf1vanUWgw0FJjPcNVHGXFCF6Z7OnfZZeY3lDDFFCE"/>
+<div>
+<p class="font-bold">Malika Ismoilova</p>
+<p class="text-xs text-on-surface-variant">"Kids Joy" bog'chasi mudirasi</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-[32px] shadow-sm">
+<div class="flex text-tertiary mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-on-surface-variant mb-8 leading-relaxed">"Platformadagi filtrlar yordamida o'z uyimga yaqin bo'lgan eng yaxshi bog'chani tanlab oldim. Tavsiya qilaman!"</p>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Young professional Central Asian woman with a friendly expression, wearing professional attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8vcSEXtTeOkrNr61XhxKuINF-7BjZbOVpyu_zhXGQVuBkC1hvOhg2iYaBCT4EFQF-X9ETTyFHFVeC2pj3IED0U63G21ChWfSnknaqGBPh0Txd2onU_IMcj9WET8yRwU2p_00TIkII4kM80HGg-aktecSyV0qYbtcvOmA0uaj7p9oNldAzi9rZejVd_OLNTyHpRVAKfZdmafzYKCzOK-JSO-PWscG1a_7z4Eroj6FVoT_4onZ-0SCzJEP8Efi-QYY4tfX65cJPpBY"/>
+<div>
+<p class="font-bold">Dilnoza Rahmonova</p>
+<p class="text-xs text-on-surface-variant">Ingliz tili ustozi</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-[32px] shadow-sm">
+<div class="flex text-tertiary mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-on-surface-variant mb-8 leading-relaxed">"Kadrlar masalasida hech qachon bunday oson yechimga duch kelmagandim. Kindred Core bizning doimiy hamkorimiz."</p>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Confident professional male administrator, friendly demeanor, in a bright office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChfR7Ng_-Nza_Jvn8l2g4R-iskfaqUIQLvDS7HwjBtzXvDzfYd2k2IQzXDUjpql8o11T4iHD-jNRva481sZ4XhW2QjXPEhuBHLvo9-NCVJTJm_GlYyi93rJW2dZN0GREaiCG-R6CidD21LtEYrzPmv4F3jiaogL4mF1jXw4Lpjs-T2gQOndt6JmnKSuRY17smlCNRiZPsimhhQ3u1aHUwIku-AUxOsqgWHsKWAnPJEjLZwDHx85p2iDy6h_qlCmL1ED8KI85rwch8"/>
+<div>
+<p class="font-bold">Jasur Mahmudov</p>
+<p class="text-xs text-on-surface-variant">HR Menejer</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. FAQ Section -->
+<section class="py-24">
+<div class="max-w-4xl mx-auto px-8">
+<h2 class="text-4xl font-extrabold mb-12 text-center">Ko'p beriladigan savollar</h2>
+<div class="space-y-4">
+<div class="bg-surface-container-low rounded-2xl overflow-hidden border border-transparent hover:border-outline-variant transition-colors">
+<button class="w-full px-8 py-6 text-left flex justify-between items-center group">
+<span class="font-bold text-lg">Platformadan foydalanish bepulmi?</span>
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">expand_more</span>
+</button>
+<div class="px-8 pb-6 text-on-surface-variant">
+                            Ish izlovchilar uchun barcha xizmatlar mutlaqo bepul. Ish beruvchilar uchun esa turli xil tarif rejalari mavjud.
+                        </div>
+</div>
+<div class="bg-surface-container-low rounded-2xl overflow-hidden border border-transparent hover:border-outline-variant transition-colors">
+<button class="w-full px-8 py-6 text-left flex justify-between items-center group">
+<span class="font-bold text-lg">Qanday qilib rezyume yaratish mumkin?</span>
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">expand_more</span>
+</button>
+</div>
+<div class="bg-surface-container-low rounded-2xl overflow-hidden border border-transparent hover:border-outline-variant transition-colors">
+<button class="w-full px-8 py-6 text-left flex justify-between items-center group">
+<span class="font-bold text-lg">Xavfsizlik qanday ta'minlanadi?</span>
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 9. Final CTA banner -->
+<section class="max-w-7xl mx-auto px-8 mb-24">
+<div class="bg-primary rounded-[48px] p-16 text-center text-white relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container opacity-100"></div>
+<div class="relative z-10">
+<h2 class="text-5xl font-extrabold mb-6">Karyerangizdagi yangi bosqichga tayyormisiz?</h2>
+<p class="text-xl opacity-90 mb-10 max-w-2xl mx-auto">Minglab o'qituvchi va bog'chalar Kindred Core orqali bir-birini topishdi. Siz ham hoziroq qo'shiling!</p>
+<div class="flex justify-center gap-6">
+<button class="bg-white text-primary px-10 py-5 rounded-[16px] font-bold text-lg shadow-xl transition-transform active:scale-95">Hoziroq ro'yxatdan o'ting</button>
+<button class="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-[16px] font-bold text-lg hover:bg-white/20 transition-all">Bizga bog'laning</button>
+</div>
+</div>
+<!-- Decorative element -->
+<div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+<div class="absolute -bottom-10 -right-10 w-60 h-60 bg-white/5 rounded-full blur-3xl"></div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full rounded-t-[32px]">
+<div class="w-full px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="col-span-2 md:col-span-1">
+<span class="text-lg font-bold text-blue-700 dark:text-blue-400 block mb-4">Kindred Core</span>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">Professional ta'lim sohasida eng ishonchli va zamonaviy xizmat ko'rsatish platformasi.</p>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-blue-600 cursor-pointer shadow-sm"><span class="material-symbols-outlined text-xl">social_leaderboard</span></div>
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-blue-600 cursor-pointer shadow-sm"><span class="material-symbols-outlined text-xl">camera</span></div>
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-blue-600 cursor-pointer shadow-sm"><span class="material-symbols-outlined text-xl">alternate_email</span></div>
+</div>
+</div>
+<div>
+<h5 class="font-bold text-on-surface mb-4">Platforma</h5>
+<ul class="space-y-3">
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Ish topish</a></li>
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Bog'chalar uchun</a></li>
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Xaritadan qidirish</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold text-on-surface mb-4">Kompaniya</h5>
+<ul class="space-y-3">
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Biz haqimizda</a></li>
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Yordam</a></li>
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Blog</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold text-on-surface mb-4">Huquqiy</h5>
+<ul class="space-y-3">
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Maxfiylik siyosati</a></li>
+<li><a class="text-slate-500 hover:text-blue-600 transition-opacity opacity-80 hover:opacity-100" href="#">Foydalanish shartlari</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-8 py-8 border-t border-slate-200/50 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+<span>© 2024 Kindred Core. Barcha huquqlar himoyalangan.</span>
+<div class="flex gap-6 mt-4 md:mt-0">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">language</span> O'zbek tili</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">shield</span> Xavfsiz tizim</span>
+</div>
+</div>
+</footer>
+</body></html>
