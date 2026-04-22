@@ -64,7 +64,10 @@ async def apply_to_vacancy(
     result = await db.execute(
         select(Application)
         .where(Application.id == application.id)
-        .options(joinedload(Application.vacancy).joinedload(Vacancy.kindergarten))
+        .options(
+            joinedload(Application.vacancy).joinedload(Vacancy.kindergarten),
+            joinedload(Application.job_seeker)
+        )
     )
     return result.scalar_one()
 
@@ -85,7 +88,10 @@ async def my_applications(
     result = await db.execute(
         select(Application)
         .where(Application.job_seeker_id == profile.id)
-        .options(joinedload(Application.vacancy).joinedload(Vacancy.kindergarten))
+        .options(
+            joinedload(Application.vacancy).joinedload(Vacancy.kindergarten),
+            joinedload(Application.job_seeker)
+        )
         .order_by(Application.created_at.desc())
     )
     return result.scalars().all()
@@ -114,7 +120,10 @@ async def get_application_detail(
                 Application.job_seeker_id == profile.id
             )
         )
-        .options(joinedload(Application.vacancy).joinedload(Vacancy.kindergarten))
+        .options(
+            joinedload(Application.vacancy).joinedload(Vacancy.kindergarten),
+            joinedload(Application.job_seeker)
+        )
     )
     application = result.scalar_one_or_none()
     if not application:
