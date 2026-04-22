@@ -55,15 +55,22 @@ app.add_middleware(
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 # Global error logging
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
+    if isinstance(exc, StarletteHTTPException):
+        raise exc
+        
     import traceback
     logger.error(f"GLOBAL ERROR: {exc}")
     logger.error(traceback.format_exc())
-    return {
-        "detail": "Internal Server Error. Check server logs."
-    }
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error. Check server logs."}
+    )
 
 # Include routers
 app.include_router(profiles_router, prefix="/api/v1")
