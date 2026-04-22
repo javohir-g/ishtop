@@ -278,7 +278,7 @@ async def get_incoming_applications(
         .where(Vacancy.kindergarten_id == kindergarten_id)
         .options(
             selectinload(Application.job_seeker),
-            selectinload(Application.vacancy)
+            selectinload(Application.vacancy).selectinload(Vacancy.kindergarten)
         )
     )
     return apps_result.scalars().all()
@@ -303,7 +303,7 @@ async def get_application_detail(
         )
         .options(
             selectinload(Application.job_seeker),
-            selectinload(Application.vacancy)
+            selectinload(Application.vacancy).selectinload(Vacancy.kindergarten)
         )
     )
     application = result.scalar_one_or_none()
@@ -348,7 +348,7 @@ async def update_application_status(
         .where(Application.id == application_id)
         .options(
             selectinload(Application.job_seeker),
-            selectinload(Application.vacancy)
+            selectinload(Application.vacancy).selectinload(Vacancy.kindergarten)
         )
     )
     return result.scalar_one()

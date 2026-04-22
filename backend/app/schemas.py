@@ -173,6 +173,7 @@ class ApplicationOut(BaseModel):
     vacancy_id: int
     job_seeker_id: int
     vacancy: Optional[VacancyOut] = None
+    job_seeker: Optional['JobSeekerProfileOut'] = None
     cover_letter: Optional[str] = None
     status: str
     created_at: datetime
