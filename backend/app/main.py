@@ -44,7 +44,8 @@ app.add_middleware(
         "http://localhost:5173",  # Vite dev server
         "http://127.0.0.1:5173",
         "https://ish-top.uz",      # Production domain (example)
-        "https://admin.ish-top.uz" 
+        "https://admin.ish-top.uz",
+        "https://ish-top-frontend.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
