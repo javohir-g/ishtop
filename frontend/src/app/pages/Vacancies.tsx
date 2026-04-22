@@ -5,6 +5,8 @@ import { useApi } from "@/hooks/useApi";
 import api from "@/services/api";
 import { ApplyModal } from "@/app/components/ApplyModal";
 import { toast } from "sonner";
+import { useTranslation } from "@/app/i18n/useTranslation";
+import { Skeleton } from "@/app/components/Skeleton";
 
 interface Vacancy {
   id: number;
@@ -56,15 +58,15 @@ export function Vacancies() {
   const vacancies = vacancyResponse?.items || [];
 
   const formatSalary = (min?: number, max?: number) => {
-    if (!min && !max) return "З/П не указана";
-    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} сум`;
-    if (min) return `от ${min.toLocaleString()} сум`;
-    if (max) return `до ${max.toLocaleString()} сум`;
-    return "З/П не указана";
+    if (!min && !max) return t('salary_not_specified');
+    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${t('currency')}`;
+    if (min) return `${t('salaryFrom')} ${min.toLocaleString()} ${t('currency')}`;
+    if (max) return `${t('salaryUpTo')} ${max.toLocaleString()} ${t('currency')}`;
+    return t('salary_not_specified');
   };
 
   const formatDate = (dateStr?: string) => {
-    if (!dateStr) return "Недавно";
+    if (!dateStr) return t('recentVacancies');
     const date = new Date(dateStr);
     return date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
   };
@@ -96,7 +98,7 @@ export function Vacancies() {
             >
               <IconArrowLeft className="w-5 h-5 text-gray-700" stroke={2} />
             </button>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Вакансии</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('vacancies')}</h1>
             <div className="ml-auto flex items-center gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -135,7 +137,7 @@ export function Vacancies() {
           <div className={`${showFilters ? 'fixed inset-y-0 right-0 w-80 z-50' : 'hidden'} md:block md:static md:col-span-1`}>
             <div className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 md:sticky md:top-24 h-full md:h-auto overflow-y-auto">
               <div className="flex items-center justify-between mb-4 md:block">
-                <h3 className="font-semibold text-gray-900">Фильтры</h3>
+                <h3 className="font-semibold text-gray-900">{t('filter')}</h3>
                 <button 
                   onClick={() => setShowFilters(false)}
                   className="md:hidden text-gray-500 text-2xl leading-none"
@@ -154,7 +156,7 @@ export function Vacancies() {
                     onChange={(e) => setDistrict(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Все районы</option>
+                    <option value="">{t('all_districts')}</option>
                     <option value="Мирзо-Улугбекский">Мирзо-Улугбекский</option>
                     <option value="Юнусабадский">Юнусабадский</option>
                     <option value="Чиланзарский">Чиланзарский</option>
@@ -165,7 +167,7 @@ export function Vacancies() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Зарплата от
+                    {t('salary_min_label')}
                   </label>
                   <input
                     type="number"
@@ -178,7 +180,7 @@ export function Vacancies() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Сортировка
+                    {t('sorting')}
                   </label>
                   <select 
                     value={sortBy}
@@ -198,7 +200,7 @@ export function Vacancies() {
                   }}
                   className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
-                  Применить
+                  {t('apply_filters')}
                 </button>
               </div>
             </div>
@@ -208,17 +210,17 @@ export function Vacancies() {
           <div className="md:col-span-3 space-y-4">
             <div className="flex items-center justify-between mb-4">
               <p className="text-gray-600">
-                {loading ? "Поиск вакансий..." : `Найдено ${vacancies.length} вакансий`}
+                {loading ? t('search') + "..." : `${t('found_vacancies')} ${vacancies.length}`}
               </p>
             </div>
 
             {loading && vacancies.length === 0 ? (
               <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 animate-pulse">
-                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                    <div className="h-4 bg-gray-100 rounded w-1/4 mb-4"></div>
-                    <div className="h-10 bg-gray-50 rounded mt-4"></div>
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="bg-white rounded-xl p-6 border border-gray-200">
+                    <Skeleton className="h-6 w-3/4 mb-4" />
+                    <Skeleton className="h-4 w-1/4 mb-4" />
+                    <Skeleton className="h-10 w-full mt-4" />
                   </div>
                 ))}
               </div>
@@ -244,7 +246,7 @@ export function Vacancies() {
                       <p className="text-gray-700">{vacancy.kindergarten?.name || "Детский сад"}</p>
                       {vacancy.kindergarten?.is_verified && (
                         <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
-                          ✓ Проверено
+                          ✓ {t('verified')}
                         </span>
                       )}
                     </div>
@@ -267,7 +269,7 @@ export function Vacancies() {
                   </div>
                   <div className="flex items-center gap-1">
                     <IconBriefcase className="w-4 h-4" stroke={2} />
-                    {vacancy.employment_type === "full_time" ? "Полная занятость" : "Частичная занятость"}
+                    {vacancy.employment_type === "full_time" ? t('fullTime') : t('partTime')}
                   </div>
                   <span>{formatDate(vacancy.published_at)}</span>
                 </div>
@@ -284,7 +286,7 @@ export function Vacancies() {
                       }}
                       className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                      Открыть
+                      {t('open')}
                     </button>
                     <button
                       onClick={(e) => {
@@ -294,7 +296,7 @@ export function Vacancies() {
                       }}
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                     >
-                      Откликнуться
+                      {t('apply')}
                     </button>
                   </div>
                 </div>
@@ -311,8 +313,9 @@ export function Vacancies() {
             )}
             
             {!loading && vacancies.length === 0 && (
-              <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
-                <p className="text-gray-500">По вашему запросу вакансий не найдено. Попробуйте изменить фильтры.</p>
+              <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+                <IconSearch className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 font-medium px-4">{t('no_vacancies_found')}</p>
               </div>
             )}
           </div>

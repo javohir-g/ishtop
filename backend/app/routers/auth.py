@@ -101,6 +101,18 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_me(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Delete current user account and all associated data."""
+    # Cascading deletes should be handled by foreign keys in models.py
+    await db.delete(current_user)
+    await db.commit()
+    return None
+
+
 @router.post("/telegram-widget", response_model=TokenResponse)
 async def telegram_widget_auth(
     request: TelegramLoginWidgetRequest,

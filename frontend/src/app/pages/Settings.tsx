@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTranslation } from "../i18n/useTranslation";
+import { toast } from "sonner";
 
 export function Settings() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export function Settings() {
   const handleDeactivate = () => {
     setShowDeactivate(false);
     // Logic for deactivation
-    alert("Ваш аккаунт деактивирован");
+    toast.success(t('deactivated_success'));
     navigate('/');
   };
 
@@ -35,8 +36,8 @@ export function Settings() {
           <IconArrowLeft className="w-6 h-6 text-gray-900" stroke={2} />
         </button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">Настройки</h1>
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1 hidden lg:block">Ваш персональный профиль</p>
+          <h1 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">{t('settings')}</h1>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1 hidden lg:block">{t('professionalProfile')}</p>
         </div>
       </div>
 
@@ -50,7 +51,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
                         <IconWorld className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-900">Язык приложения</span>
+                    <span className="text-base font-bold text-gray-900">{t('language_app')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <span className="text-xs font-black text-blue-600 uppercase tracking-widest">{languageLabels[language] || "Русский"}</span>
@@ -63,7 +64,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
                         <IconMoon className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-900">Темная тема</span>
+                    <span className="text-base font-bold text-gray-900">{t('darkMode')}</span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -81,7 +82,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-all">
                         <IconHelp className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-900">Помощь и поддержка</span>
+                    <span className="text-base font-bold text-gray-900">{t('helpCenter')}</span>
                 </div>
                 <IconChevronRight className="w-5 h-5 text-gray-300" stroke={2} />
             </button>
@@ -89,7 +90,7 @@ export function Settings() {
 
         {/* About Section */}
         <div className="mt-10 mb-4 px-4">
-          <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Юридическая информация</h3>
+          <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('legal_info')}</h3>
         </div>
 
         <div className="space-y-1">
@@ -101,7 +102,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-all">
                         <IconShield className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-900">Политика конфиденциальности</span>
+                    <span className="text-base font-bold text-gray-900">{t('privacyPolicy')}</span>
                 </div>
                 <IconChevronRight className="w-5 h-5 text-gray-300" stroke={2} />
             </button>
@@ -114,7 +115,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                         <IconFileText className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-900">Условия использования</span>
+                    <span className="text-base font-bold text-gray-900">{t('termsOfUse')}</span>
                 </div>
                 <IconChevronRight className="w-5 h-5 text-gray-300" stroke={2} />
             </button>
@@ -124,7 +125,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-all">
                         <IconInfoCircle className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-900">О приложении</span>
+                    <span className="text-base font-bold text-gray-900">{t('about')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <span className="text-xs font-black text-gray-400">v1.0.0</span>
@@ -143,7 +144,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
                         <IconX className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-red-500">Деактивировать аккаунт</span>
+                    <span className="text-base font-bold text-red-500">{t('deactivateAccount')}</span>
                 </div>
             </button>
 
@@ -155,7 +156,7 @@ export function Settings() {
                     <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-gray-900 group-hover:text-white transition-all">
                         <IconLogout className="w-5 h-5" stroke={2} />
                     </div>
-                    <span className="text-base font-bold text-gray-500 group-hover:text-gray-900 transition-all">Выйти из аккаунта</span>
+                    <span className="text-base font-bold text-gray-500 group-hover:text-gray-900 transition-all">{t('logout')}</span>
                 </div>
             </button>
         </div>
@@ -171,23 +172,23 @@ export function Settings() {
               </div>
             </div>
             <h3 className="text-2xl font-black text-gray-900 text-center mb-3">
-              Удалить аккаунт?
+              {t('deactivateAccount')}?
             </h3>
             <p className="text-sm font-medium text-gray-500 text-center mb-8 leading-relaxed">
-              Вы уверены, что хотите деактивировать свой профиль? Все ваши данные будут скрыты.
+              {t('confirm_deactivate')}
             </p>
             <div className="grid grid-cols-1 gap-3">
                <button
                 onClick={handleDeactivate}
                 className="py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-red-700 active:scale-95 transition-all shadow-lg shadow-red-200"
               >
-                Да, деактивировать
+                {t('yes_deactivate')}
               </button>
               <button
                 onClick={() => setShowDeactivate(false)}
                 className="py-4 bg-gray-100 text-gray-900 rounded-2xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all"
               >
-                Отмена
+                {t('cancel')}
               </button>
             </div>
           </div>

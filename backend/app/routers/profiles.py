@@ -5,12 +5,18 @@ from sqlalchemy.orm import selectinload
 from typing import List
 
 from ..database import get_db
-from ..models import User, UserRole, JobSeekerProfile, Skill, EducationRecord, ExperienceRecord, KindergartenEmployer, Kindergarten
+from ..models import (
+    User, UserRole, JobSeekerProfile, Skill, EducationRecord, 
+    ExperienceRecord, KindergartenEmployer, Kindergarten,
+    LanguageRecord, CertificateRecord
+)
 from ..schemas import (
     JobSeekerProfileOut, JobSeekerProfileCreate, JobSeekerProfileExtendedOut,
     SkillSchema, SkillCreate,
-    EducationRecordOut, EducationRecordCreate,
-    ExperienceRecordOut, ExperienceRecordCreate,
+    EducationRecordOut, EducationRecordCreate, EducationRecordUpdate,
+    ExperienceRecordOut, ExperienceRecordCreate, ExperienceRecordUpdate,
+    LanguageRecordOut, LanguageRecordCreate,
+    CertificateRecordOut, CertificateRecordCreate,
     EmployerProfileOut
 )
 from ..auth import get_current_user
@@ -30,7 +36,9 @@ async def get_my_profile(
             .options(
                 selectinload(JobSeekerProfile.skills),
                 selectinload(JobSeekerProfile.education),
-                selectinload(JobSeekerProfile.experience)
+                selectinload(JobSeekerProfile.experience),
+                selectinload(JobSeekerProfile.languages),
+                selectinload(JobSeekerProfile.certificates)
             )
         )
         profile = result.scalar_one_or_none()
@@ -136,7 +144,7 @@ async def delete_skill(
     await db.commit()
     return None
 
-# --- Education & Experience (Minimal support for completeness) ---
+# --- Education ---
 
 @router.post("/education", response_model=EducationRecordOut)
 async def add_education(
@@ -144,15 +152,59 @@ async def add_education(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    result = await db.execute(select(JobSeekerProfile).where(JobSeekerProfile.user_id == current_user.id))
-    profile = result.scalar_one_or_none()
-    if not profile: raise HTTPException(status_code=404, detail="Profile not found")
+    result = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+    profile_id = result.scalar_one_or_none()
+    if not profile_id: raise HTTPException(status_code=404, detail="Profile not found")
     
-    new_edu = EducationRecord(job_seeker_id=profile.id, **edu_data.model_dump())
+    new_edu = EducationRecord(job_seeker_id=profile_id, **edu_data.model_dump())
     db.add(new_edu)
     await db.commit()
     await db.refresh(new_edu)
     return new_edu
+
+@router.put("/education/{edu_id}", response_model=EducationRecordOut)
+async def update_education(
+    edu_id: int,
+    edu_data: EducationRecordUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(EducationRecord).join(JobSeekerProfile).where(
+            EducationRecord.id == edu_id, 
+            JobSeekerProfile.user_id == current_user.id
+        )
+    )
+    edu = result.scalar_one_or_none()
+    if not edu: raise HTTPException(status_code=404, detail="Record not found")
+    
+    for key, value in edu_data.model_dump(exclude_unset=True).items():
+        setattr(edu, key, value)
+    
+    await db.commit()
+    await db.refresh(edu)
+    return edu
+
+@router.delete("/education/{edu_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_education(
+    edu_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(EducationRecord).join(JobSeekerProfile).where(
+            EducationRecord.id == edu_id, 
+            JobSeekerProfile.user_id == current_user.id
+        )
+    )
+    edu = result.scalar_one_or_none()
+    if not edu: raise HTTPException(status_code=404, detail="Record not found")
+    
+    await db.delete(edu)
+    await db.commit()
+    return None
+
+# --- Experience ---
 
 @router.post("/experience", response_model=ExperienceRecordOut)
 async def add_experience(
@@ -160,12 +212,128 @@ async def add_experience(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    result = await db.execute(select(JobSeekerProfile).where(JobSeekerProfile.user_id == current_user.id))
-    profile = result.scalar_one_or_none()
-    if not profile: raise HTTPException(status_code=404, detail="Profile not found")
+    result = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+    profile_id = result.scalar_one_or_none()
+    if not profile_id: raise HTTPException(status_code=404, detail="Profile not found")
     
-    new_exp = ExperienceRecord(job_seeker_id=profile.id, **exp_data.model_dump())
+    new_exp = ExperienceRecord(job_seeker_id=profile_id, **exp_data.model_dump())
     db.add(new_exp)
     await db.commit()
     await db.refresh(new_exp)
     return new_exp
+
+@router.put("/experience/{exp_id}", response_model=ExperienceRecordOut)
+async def update_experience(
+    exp_id: int,
+    exp_data: ExperienceRecordUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(ExperienceRecord).join(JobSeekerProfile).where(
+            ExperienceRecord.id == exp_id, 
+            JobSeekerProfile.user_id == current_user.id
+        )
+    )
+    exp = result.scalar_one_or_none()
+    if not exp: raise HTTPException(status_code=404, detail="Record not found")
+    
+    for key, value in exp_data.model_dump(exclude_unset=True).items():
+        setattr(exp, key, value)
+    
+    await db.commit()
+    await db.refresh(exp)
+    return exp
+
+@router.delete("/experience/{exp_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_experience(
+    exp_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(ExperienceRecord).join(JobSeekerProfile).where(
+            ExperienceRecord.id == exp_id, 
+            JobSeekerProfile.user_id == current_user.id
+        )
+    )
+    exp = result.scalar_one_or_none()
+    if not exp: raise HTTPException(status_code=404, detail="Record not found")
+    
+    await db.delete(exp)
+    await db.commit()
+    return None
+
+# --- Languages ---
+
+@router.post("/languages", response_model=LanguageRecordOut)
+async def add_language(
+    lang_data: LanguageRecordCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+    profile_id = result.scalar_one_or_none()
+    if not profile_id: raise HTTPException(status_code=404, detail="Profile not found")
+    
+    new_lang = LanguageRecord(job_seeker_id=profile_id, **lang_data.model_dump())
+    db.add(new_lang)
+    await db.commit()
+    await db.refresh(new_lang)
+    return new_lang
+
+@router.delete("/languages/{lang_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_language(
+    lang_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(LanguageRecord).join(JobSeekerProfile).where(
+            LanguageRecord.id == lang_id, 
+            JobSeekerProfile.user_id == current_user.id
+        )
+    )
+    lang = result.scalar_one_or_none()
+    if not lang: raise HTTPException(status_code=404, detail="Record not found")
+    
+    await db.delete(lang)
+    await db.commit()
+    return None
+
+# --- Certificates ---
+
+@router.post("/certificates", response_model=CertificateRecordOut)
+async def add_certificate(
+    cert_data: CertificateRecordCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+    profile_id = result.scalar_one_or_none()
+    if not profile_id: raise HTTPException(status_code=404, detail="Profile not found")
+    
+    new_cert = CertificateRecord(job_seeker_id=profile_id, **cert_data.model_dump())
+    db.add(new_cert)
+    await db.commit()
+    await db.refresh(new_cert)
+    return new_cert
+
+@router.delete("/certificates/{cert_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_certificate(
+    cert_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(CertificateRecord).join(JobSeekerProfile).where(
+            CertificateRecord.id == cert_id, 
+            JobSeekerProfile.user_id == current_user.id
+        )
+    )
+    cert = result.scalar_one_or_none()
+    if not cert: raise HTTPException(status_code=404, detail="Record not found")
+    
+    await db.delete(cert)
+    await db.commit()
+    return None

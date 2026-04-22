@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { useApi, useApiMutation } from "@/hooks/useApi";
 import api from "@/services/api";
+import { toast } from "sonner";
+import { useTranslation } from "@/app/i18n/useTranslation";
 
 interface VacancyFormData {
   title: string;
@@ -30,6 +32,8 @@ export function KindergartenVacancyForm() {
     district: "",
     employment_type: "full_time",
   });
+  const [errors, setErrors] = useState<any>({});
+  const { t } = useTranslation();
 
   const fetchVacancyFunc = useCallback(() => api.get(`/employer/vacancies/${id}`), [id]);
   const { data: initialVacancy, loading: loadingInitial } = useApi<any>(isEditing ? fetchVacancyFunc : () => Promise.resolve({ data: null }));
@@ -54,18 +58,23 @@ export function KindergartenVacancyForm() {
   }, [isEditing, initialVacancy]);
 
   const handleSubmit = async (publish: boolean) => {
-    if (!formData.title || !formData.description) {
-      alert("Название и описание обязательны");
+    const newErrors: any = {};
+    if (!formData.title?.trim()) newErrors.title = "Название обязательно";
+    if (!formData.description?.trim()) newErrors.description = "Описание обязательно";
+    if (!formData.district?.trim()) newErrors.district = "Район обязателен";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Пожалуйста, заполните обязательные поля");
       return;
     }
     
     try {
-      // If we had a draft status, we'd use 'publish' flag, but for now we just save as active
       await saveVacancy(formData);
-      alert(isEditing ? "Вакансия сохранена" : "Вакансия опубликована!");
+      toast.success(isEditing ? "Вакансия сохранена" : "Вакансия опубликована!");
       navigate("/kindergarten/vacancies");
     } catch (err: any) {
-      alert("Ошибка: " + (err.response?.data?.detail || err.message));
+      toast.error("Ошибка: " + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -96,8 +105,9 @@ export function KindergartenVacancyForm() {
             value={formData.title}
             onChange={(e) => setFormData({...formData, title: e.target.value})}
             placeholder="Например: Воспитатель младшей группы"
-            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+            className={`w-full px-5 py-4 bg-gray-50 border ${errors.title ? 'border-red-500' : 'border-gray-100'} rounded-2xl text-base font-bold focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none`}
           />
+          {errors.title && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.title}</p>}
         </div>
 
         {/* Salary */}
@@ -137,8 +147,9 @@ export function KindergartenVacancyForm() {
                 value={formData.district}
                 onChange={(e) => setFormData({...formData, district: e.target.value})}
                 placeholder="Чиланзарский, Юнусабадский..."
-                className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:bg-white transition-all outline-none"
+                className={`w-full px-5 py-4 bg-gray-50 border ${errors.district ? 'border-red-500' : 'border-gray-100'} rounded-2xl text-base font-bold focus:bg-white transition-all outline-none`}
               />
+              {errors.district && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.district}</p>}
             </div>
             <div>
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Тип занятости</label>
@@ -169,8 +180,9 @@ export function KindergartenVacancyForm() {
               onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
               placeholder={field.placeholder}
               rows={5}
-              className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-medium focus:bg-white transition-all outline-none resize-none leading-relaxed"
+              className={`w-full px-5 py-4 bg-gray-50 border ${errors[field.id] ? 'border-red-500' : 'border-gray-100'} rounded-2xl text-sm font-medium focus:bg-white transition-all outline-none resize-none leading-relaxed`}
             />
+            {errors[field.id] && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors[field.id]}</p>}
           </div>
         ))}
       </div>

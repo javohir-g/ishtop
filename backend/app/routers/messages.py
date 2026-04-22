@@ -3,7 +3,7 @@ from sqlalchemy import select, and_, or_, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..database import get_db
 from ..models import User, UserRole, Chat, Message, JobSeekerProfile, KindergartenEmployer, Kindergarten
@@ -94,6 +94,16 @@ async def send_message(
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
+    # Verify ownership
+    if current_user.role == UserRole.JOB_SEEKER:
+        prof_res = await db.execute(select(JobSeekerProfile.id).where(JobSeekerProfile.user_id == current_user.id))
+        if chat.job_seeker_id != prof_res.scalar_one_or_none():
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == UserRole.KINDERGARTEN_EMPLOYER:
+        emp_res = await db.execute(select(KindergartenEmployer.kindergarten_id).where(KindergartenEmployer.user_id == current_user.id))
+        if chat.kindergarten_id != emp_res.scalar_one_or_none():
+            raise HTTPException(status_code=403, detail="Access denied")
+
     new_msg = Message(
         chat_id=chat_id,
         sender_id=current_user.id,
@@ -103,7 +113,7 @@ async def send_message(
     
     # Update chat metadata
     chat.last_message = msg_data.content
-    chat.last_message_at = datetime.now()
+    chat.last_message_at = datetime.now(timezone.utc)
     if current_user.role == UserRole.JOB_SEEKER:
         chat.unread_by_employer += 1
     else:
@@ -128,7 +138,7 @@ async def mark_chat_as_read(
     await db.execute(
         update(Message)
         .where(and_(Message.chat_id == chat_id, Message.sender_id != current_user.id))
-        .values(is_read=True, read_at=datetime.now())
+        .values(is_read=True, read_at=datetime.now(timezone.utc))
     )
     await db.commit()
     return None

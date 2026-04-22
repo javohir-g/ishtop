@@ -12,6 +12,8 @@ from .routers.favorites import router as favorites_router
 from .routers.messages import router as messages_router
 from .routers.admin import router as admin_router
 from .routers.stats import router as stats_router
+from .routers.uploads import router as uploads_router
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Ish-Top API",
@@ -32,11 +34,19 @@ async def startup_event():
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production
+    allow_origins=[
+        "http://localhost:5173",  # Vite dev server
+        "http://127.0.0.1:5173",
+        "https://ish-top.uz",      # Production domain (example)
+        "https://admin.ish-top.uz" 
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
 # Global error logging
 @app.exception_handler(Exception)
@@ -57,6 +67,7 @@ app.include_router(workers_router, prefix="/api/v1")
 app.include_router(favorites_router, prefix="/api/v1")
 app.include_router(messages_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(uploads_router, prefix="/api/v1")
 app.include_router(stats_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
 

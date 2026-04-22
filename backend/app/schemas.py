@@ -82,11 +82,16 @@ class JobSeekerProfileCreate(BaseModel):
     gender: Optional[str] = None
     location: Optional[str] = None
     district: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
     about_me: Optional[str] = None
     desired_position: Optional[str] = None
     desired_salary_min: Optional[int] = None
     desired_salary_max: Optional[int] = None
     experience_years: int = 0
+    has_medical_book: bool = False
+    medical_book_expires_at: Optional[date] = None
 
 class JobSeekerProfileOut(BaseModel):
     id: int
@@ -97,11 +102,16 @@ class JobSeekerProfileOut(BaseModel):
     gender: Optional[str] = None
     location: Optional[str] = None
     district: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
     about_me: Optional[str] = None
     desired_position: Optional[str] = None
     desired_salary_min: Optional[int] = None
     desired_salary_max: Optional[int] = None
     experience_years: int
+    has_medical_book: bool
+    medical_book_expires_at: Optional[date] = None
     is_available: bool
     rating: float
     created_at: datetime
@@ -206,6 +216,14 @@ class EducationRecordCreate(BaseModel):
     end_year: Optional[int] = None
     is_current: bool = False
 
+class EducationRecordUpdate(BaseModel):
+    institution: Optional[str] = None
+    degree: Optional[str] = None
+    field_of_study: Optional[str] = None
+    start_year: Optional[int] = None
+    end_year: Optional[int] = None
+    is_current: Optional[bool] = None
+
 
 # --- Experience ---
 
@@ -229,6 +247,50 @@ class ExperienceRecordCreate(BaseModel):
     is_current: bool = False
     description: Optional[str] = None
 
+class ExperienceRecordUpdate(BaseModel):
+    position: Optional[str] = None
+    company_name: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    is_current: Optional[bool] = None
+    description: Optional[str] = None
+
+# --- Languages ---
+
+class LanguageRecordOut(BaseModel):
+    id: int
+    language_name: str
+    level: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class LanguageRecordCreate(BaseModel):
+    language_name: str
+    level: str
+
+# --- Certificates ---
+
+class CertificateRecordOut(BaseModel):
+    id: int
+    name: str
+    organization: str
+    issue_date: Optional[date] = None
+    expiration_date: Optional[date] = None
+    credential_url: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class CertificateRecordCreate(BaseModel):
+    name: str
+    organization: str
+    issue_date: Optional[date] = None
+    expiration_date: Optional[date] = None
+    credential_url: Optional[str] = None
+
 
 # --- Extended Profiles ---
 
@@ -236,6 +298,8 @@ class JobSeekerProfileExtendedOut(JobSeekerProfileOut):
     skills: List[SkillSchema] = []
     education: List[EducationRecordOut] = []
     experience: List[ExperienceRecordOut] = []
+    languages: List[LanguageRecordOut] = []
+    certificates: List[CertificateRecordOut] = []
 
 class KindergartenEmployerOut(BaseModel):
     id: int

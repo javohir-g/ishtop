@@ -133,11 +133,16 @@ class JobSeekerProfile(Base):
     gender: Mapped[Optional[GenderType]] = mapped_column(SAEnum(GenderType, native_enum=False))
     location: Mapped[Optional[str]] = mapped_column(String(255))
     district: Mapped[Optional[str]] = mapped_column(String(255), index=True)
+    address: Mapped[Optional[str]] = mapped_column(Text)
+    phone: Mapped[Optional[str]] = mapped_column(String(50))
+    email: Mapped[Optional[str]] = mapped_column(String(255))
     about_me: Mapped[Optional[str]] = mapped_column(Text)
     desired_position: Mapped[Optional[str]] = mapped_column(String(255))
     desired_salary_min: Mapped[Optional[int]] = mapped_column(Integer)
     desired_salary_max: Mapped[Optional[int]] = mapped_column(Integer)
     experience_years: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    has_medical_book: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    medical_book_expires_at: Mapped[Optional[date]] = mapped_column(Date)
     is_available: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     rating: Mapped[float] = mapped_column(Numeric(3, 2), default=0.0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -147,6 +152,8 @@ class JobSeekerProfile(Base):
     skills = relationship("Skill", back_populates="job_seeker")
     education = relationship("EducationRecord", back_populates="job_seeker")
     experience = relationship("ExperienceRecord", back_populates="job_seeker")
+    languages = relationship("LanguageRecord", back_populates="job_seeker")
+    certificates = relationship("CertificateRecord", back_populates="job_seeker")
     applications = relationship("Application", back_populates="job_seeker")
     saved_vacancies = relationship("SavedVacancy", back_populates="job_seeker")
     chats = relationship("Chat", back_populates="job_seeker")
@@ -191,6 +198,31 @@ class ExperienceRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     job_seeker = relationship("JobSeekerProfile", back_populates="experience")
+
+class LanguageRecord(Base):
+    __tablename__ = "language_records"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_seeker_id: Mapped[int] = mapped_column(Integer, ForeignKey("job_seeker_profiles.id", ondelete="CASCADE"), nullable=False)
+    language_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    level: Mapped[str] = mapped_column(String(100), nullable=False) # e.g. A1, B2, Native
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    job_seeker = relationship("JobSeekerProfile", back_populates="languages")
+
+class CertificateRecord(Base):
+    __tablename__ = "certificate_records"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_seeker_id: Mapped[int] = mapped_column(Integer, ForeignKey("job_seeker_profiles.id", ondelete="CASCADE"), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    organization: Mapped[str] = mapped_column(String(255), nullable=False)
+    issue_date: Mapped[Optional[date]] = mapped_column(Date)
+    expiration_date: Mapped[Optional[date]] = mapped_column(Date)
+    credential_url: Mapped[Optional[str]] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    job_seeker = relationship("JobSeekerProfile", back_populates="certificates")
 
 class Vacancy(Base):
     __tablename__ = "vacancies"

@@ -3,9 +3,12 @@ import { useNavigate } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
 import api from "@/services/api";
+import { useTranslation } from "@/app/i18n/useTranslation";
+import { toast } from "sonner";
 
 export function KindergartenProfile() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [showDeactivate, setShowDeactivate] = useState(false);
 
   const fetchProfileFunc = useCallback(() => api.get("/employer/profile"), []);
@@ -21,10 +24,9 @@ export function KindergartenProfile() {
   const handleDeactivate = () => {
     setShowDeactivate(false);
     // Logic for deactivation would go here
-    alert("Функция деактивации в разработке");
+    toast.info(t('not_implemented') || "В разработке...");
   };
 
-  if (loadingProfile || loadingStats) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -39,7 +41,7 @@ export function KindergartenProfile() {
     <div className="bg-white min-h-screen pb-24">
       {/* Header */}
       <div className="px-5 pt-6 pb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Профиль</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('profile')}</h1>
         <button
           onClick={() => navigate("/kindergarten/settings")}
           className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
@@ -59,15 +61,15 @@ export function KindergartenProfile() {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-black text-gray-900 truncate mb-1">{kindergarten?.name || "Название не указано"}</h2>
+            <h2 className="text-xl font-black text-gray-900 truncate mb-1">{kindergarten?.name || t('not_specified')}</h2>
             <p className="text-sm font-bold text-blue-600 flex items-center gap-1">
               <IconMapPin className="w-4 h-4" />
-              {kindergarten?.district || "Район не указан"}
+              {kindergarten?.district || t('not_specified')}
             </p>
             {kindergarten?.is_verified && (
               <div className="flex items-center gap-1 mt-2">
                 <IconCircleCheck className="w-4 h-4 text-green-600" stroke={2} />
-                <span className="text-[10px] text-green-600 font-black uppercase tracking-wider">Верифицирован</span>
+                <span className="text-[10px] text-green-600 font-black uppercase tracking-wider">{t('verified')}</span>
               </div>
             )}
           </div>
@@ -83,22 +85,22 @@ export function KindergartenProfile() {
         <div className="grid grid-cols-3 gap-3 mb-8">
           <div className="bg-gray-50 rounded-2xl p-4 text-center border border-gray-100">
             <p className="text-2xl font-black text-blue-600">{stats?.active_vacancies || 0}</p>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1 leading-tight">Активные вакансии</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1 leading-tight">{t('active_vacancies')}</p>
           </div>
           <div className="bg-gray-50 rounded-2xl p-4 text-center border border-gray-100">
             <p className="text-2xl font-black text-blue-600">{stats?.applications_total || 0}</p>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1 leading-tight">Всего откликов</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1 leading-tight">{t('total_applications')}</p>
           </div>
           <div className="bg-gray-50 rounded-2xl p-4 text-center border border-gray-100">
             <p className="text-2xl font-black text-green-600">{stats?.views_total || 0}</p>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1 leading-tight">Просмотры</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1 leading-tight">{t('views')}</p>
           </div>
         </div>
 
         {/* Contact Information Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-black text-gray-900">Контакты</h3>
+            <h3 className="text-lg font-black text-gray-900">{t('contacts')}</h3>
           </div>
           <div className="border border-gray-100 rounded-3xl p-5 space-y-5">
             <div className="flex items-start gap-4">
@@ -107,7 +109,7 @@ export function KindergartenProfile() {
               </div>
               <div>
                 <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                <p className="text-sm font-bold text-gray-900">{kindergarten?.email || "Не указан"}</p>
+                <p className="text-sm font-bold text-gray-900">{kindergarten?.email || t('not_specified')}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -115,8 +117,8 @@ export function KindergartenProfile() {
                 <IconPhone className="w-5 h-5" stroke={2} />
               </div>
               <div>
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Телефон</p>
-                <p className="text-sm font-bold text-gray-900">{kindergarten?.phone || "Не указан"}</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{t('phone')}</p>
+                <p className="text-sm font-bold text-gray-900">{kindergarten?.phone || t('not_specified')}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -124,8 +126,8 @@ export function KindergartenProfile() {
                 <IconMapPin className="w-5 h-5" stroke={2} />
               </div>
               <div>
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Адрес</p>
-                <p className="text-sm font-bold text-gray-900 leading-relaxed">{kindergarten?.address || "Не указан"}</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{t('address')}</p>
+                <p className="text-sm font-bold text-gray-900 leading-relaxed">{kindergarten?.address || t('not_specified')}</p>
               </div>
             </div>
           </div>
@@ -133,24 +135,24 @@ export function KindergartenProfile() {
 
         {/* About Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-black text-gray-900 mb-4">О детском саде</h3>
+          <h3 className="text-lg font-black text-gray-900 mb-4">{t('about_kindergarten')}</h3>
           <div className="border border-gray-100 rounded-3xl p-6 bg-gray-50/30">
             <p className="text-sm font-medium text-gray-700 leading-relaxed">
-              {kindergarten?.description || "Описание пока не заполнено."}
+              {kindergarten?.description || t('not_specified')}
             </p>
           </div>
         </div>
 
         {/* Additional Info Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-black text-gray-900 mb-4">Дополнительно</h3>
+          <h3 className="text-lg font-black text-gray-900 mb-4">{t('additional')}</h3>
           <div className="border border-gray-100 rounded-3xl p-5 space-y-5">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
                 <IconUsers className="w-5 h-5" stroke={2} />
               </div>
               <div>
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Представитель</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{t('representative')}</p>
                 <p className="text-sm font-bold text-gray-900">{employer?.full_name}</p>
                 {employer?.position && <p className="text-[10px] text-blue-600 font-bold uppercase">{employer.position}</p>}
               </div>
@@ -160,7 +162,7 @@ export function KindergartenProfile() {
                 <IconCalendar className="w-5 h-5" stroke={2} />
               </div>
               <div>
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">На платформе с</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{t('on_platform_since')}</p>
                 <p className="text-sm font-bold text-gray-900">
                   {kindergarten?.created_at ? new Date(kindergarten.created_at).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' }) : "—"}
                 </p>
@@ -175,7 +177,7 @@ export function KindergartenProfile() {
             onClick={() => setShowDeactivate(true)}
             className="w-full py-4 text-sm font-black text-red-500 uppercase tracking-widest hover:bg-red-50 rounded-2xl transition-colors"
           >
-            Деактивировать аккаунт
+            {t('deactivateAccount')}
           </button>
         </div>
       </div>
@@ -190,23 +192,23 @@ export function KindergartenProfile() {
               </div>
             </div>
             <h3 className="text-2xl font-black text-gray-900 text-center mb-3 tracking-tight">
-              Удалить аккаунт?
+              {t('deactivateAccount')}?
             </h3>
             <p className="text-sm font-medium text-gray-500 text-center mb-8 leading-relaxed">
-              Вы уверены, что хотите деактивировать свой профиль? Все ваши вакансии будут скрыты.
+              {t('confirm_deactivate')}
             </p>
             <div className="grid grid-cols-1 gap-3">
                <button
                 onClick={handleDeactivate}
                 className="py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-red-700 active:scale-95 transition-all shadow-lg shadow-red-200"
               >
-                Да, деактивировать
+                {t('yes_deactivate')}
               </button>
               <button
                 onClick={() => setShowDeactivate(false)}
                 className="py-4 bg-gray-100 text-gray-900 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-gray-200 active:scale-95 transition-all"
               >
-                Отмена
+                {t('cancel')}
               </button>
             </div>
           </div>

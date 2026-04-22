@@ -41,6 +41,10 @@ import { AdminUsers } from "./pages/admin/AdminUsers";
 import { AdminKindergartens } from "./pages/admin/AdminKindergartens";
 import { AdminVacancies } from "./pages/admin/AdminVacancies";
 import { AdminSettings } from "./pages/admin/AdminSettings";
+import { SuccessPage } from "./pages/SuccessPage";
+import { AccessDenied } from "./pages/AccessDenied";
+import { MaintenancePage } from "./pages/MaintenancePage";
+import { OfflinePage } from "./pages/OfflinePage";
 
 export const router = createBrowserRouter([
   {
@@ -140,6 +144,10 @@ export const router = createBrowserRouter([
             path: "invite-friends", 
             Component: InviteFriends,
           },
+          {
+            path: "success",
+            Component: SuccessPage,
+          }
         ],
       },
       {
@@ -229,6 +237,18 @@ export const router = createBrowserRouter([
             Component: AdminSettings,
           },
         ],
+      },
+      {
+        path: "403",
+        Component: AccessDenied,
+      },
+      {
+        path: "maintenance",
+        Component: MaintenancePage,
+      },
+      {
+        path: "offline",
+        Component: OfflinePage,
       },
       {
         path: "*",

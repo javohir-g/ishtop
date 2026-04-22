@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "@/app/i18n/useTranslation";
 import { useApi, useApiMutation } from "@/hooks/useApi";
 import api from "@/services/api";
+import { toast } from "sonner";
 
 interface BackendVacancy {
   id: number;
@@ -56,10 +57,9 @@ export function JobDetail() {
     if (!job) return;
     try {
       await apply(job.id);
-      alert("Заявка успешно отправлена!");
-      navigate("/app/applications");
+      navigate("/app/success");
     } catch (err: any) {
-      alert("Ошибка: " + (err.response?.data?.detail || err.message));
+      toast.error("Ошибка: " + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -68,20 +68,21 @@ export function JobDetail() {
       await toggleFavorite(isFavorite);
       setIsFavorite(!isFavorite);
     } catch (err: any) {
-      alert("Ошибка избранного: " + (err.response?.data?.detail || err.message));
+      toast.error("Ошибка: " + (err.response?.data?.detail || err.message));
     }
   };
 
   const formatSalary = (min?: number, max?: number) => {
-    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} сум`;
-    if (min) return `от ${min.toLocaleString()} сум`;
-    if (max) return `до ${max.toLocaleString()} сум`;
-    return "Зарплата не указана";
+    if (!min && !max) return t('salary_not_specified');
+    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${t('currency')}`;
+    if (min) return `${t('salaryFrom')} ${min.toLocaleString()} ${t('currency')}`;
+    if (max) return `${t('salaryUpTo')} ${max.toLocaleString()} ${t('currency')}`;
+    return t('salary_not_specified');
   };
 
-  if (loading) return <div className="text-center py-20">Загрузка...</div>;
+  if (loading) return <div className="text-center py-20">{t('loading')}...</div>;
   if (error) return <div className="text-center py-20 text-red-500 font-bold">{error}</div>;
-  if (!job) return <div className="text-center py-20">Вакансия не найдена</div>;
+  if (!job) return <div className="text-center py-20">{t('not_found')}</div>;
 
   return (
     <div className="bg-white min-h-screen pb-32">
@@ -127,7 +128,7 @@ export function JobDetail() {
             </span>
           </div>
           <p className="text-sm text-gray-500">
-            {job.published_at ? `Опубликовано ${new Date(job.published_at).toLocaleDateString('ru-RU')}` : ""}
+            {job.published_at ? `${t('published_on')} ${new Date(job.published_at).toLocaleDateString('ru-RU')}` : ""}
           </p>
         </div>
       </div>
@@ -136,9 +137,9 @@ export function JobDetail() {
       <div className="border-b border-gray-100">
         <div className="px-5 flex gap-8">
           {[
-            { id: "description", label: "Описание" },
-            { id: "requirements", label: "Требования" },
-            { id: "contacts", label: "Контакты" }
+            { id: "description", label: t('description') },
+            { id: "requirements", label: t('requirements') },
+            { id: "contacts", label: t('contacts') }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -160,11 +161,11 @@ export function JobDetail() {
       <div className="px-5 py-6">
         {activeTab === "description" && (
           <div className="animate-fade-in">
-            <h3 className="text-base font-bold text-gray-900 mb-3">Детали работы:</h3>
+            <h3 className="text-base font-bold text-gray-900 mb-3">{t('job_details')}:</h3>
             <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{job.description}</p>
             {job.responsibilities && (
               <>
-                <h3 className="text-base font-bold text-gray-900 mt-6 mb-3">Обязанности:</h3>
+                <h3 className="text-base font-bold text-gray-900 mt-6 mb-3">{t('responsibilities')}:</h3>
                 <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{job.responsibilities}</p>
               </>
             )}
@@ -172,14 +173,14 @@ export function JobDetail() {
         )}
         {activeTab === "requirements" && (
           <div className="animate-fade-in">
-            <h3 className="text-base font-bold text-gray-900 mb-3">Что мы ищем:</h3>
-            <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{job.requirements || "Требования не указаны"}</p>
+            <h3 className="text-base font-bold text-gray-900 mb-3">{t('what_we_look_for')}:</h3>
+            <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{job.requirements || t('not_specified')}</p>
           </div>
         )}
         {activeTab === "contacts" && (
           <div className="animate-fade-in">
-             <h3 className="text-base font-bold text-gray-900 mb-3">О детском саде:</h3>
-             <p className="text-sm text-gray-700 mb-4">{job.kindergarten?.description || "Информация отсутствует"}</p>
+             <h3 className="text-base font-bold text-gray-900 mb-3">{t('about_kindergarten')}:</h3>
+             <p className="text-sm text-gray-700 mb-4">{job.kindergarten?.description || t('not_specified')}</p>
           </div>
         )}
       </div>
@@ -195,7 +196,7 @@ export function JobDetail() {
             disabled={applying}
             className="w-full bg-blue-600 text-white py-4 rounded-full text-base font-bold shadow-lg hover:bg-blue-700 transition-colors disabled:opacity-70"
           >
-            {applying ? "Отправка..." : "Откликнуться"}
+            {applying ? t('authorizing') : t('apply')}
           </button>
         </div>
       </div>

@@ -13,6 +13,11 @@ interface ProfileData {
   experience_years?: number;
   desired_salary_min?: number;
   photo_url?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  has_medical_book?: boolean;
+  medical_book_expires_at?: string;
 }
 
 export function EditProfile() {
@@ -31,7 +36,13 @@ export function EditProfile() {
     district: "",
     experience_years: 0,
     desired_salary_min: 0,
+    phone: "",
+    email: "",
+    address: "",
+    has_medical_book: false,
+    medical_book_expires_at: "",
   });
+  const [errors, setErrors] = useState<any>({});
 
   const { execute: updateProfile, loading: saving } = useApiMutation(
     (data: any) => api.put("/profile", data)
@@ -50,15 +61,26 @@ export function EditProfile() {
         district: initialData.district || "",
         experience_years: initialData.experience_years || 0,
         desired_salary_min: initialData.desired_salary_min || 0,
+        phone: initialData.phone || "",
+        email: initialData.email || "",
+        address: initialData.address || "",
+        has_medical_book: initialData.has_medical_book || false,
+        medical_book_expires_at: initialData.medical_book_expires_at || "",
       });
     }
   }, [initialData]);
 
   const handleSave = async () => {
-    if (!formData.full_name || !formData.full_name.trim()) {
-      alert("Имя обязательно для заполнения");
+    const newErrors: any = {};
+    if (!formData.full_name?.trim()) newErrors.full_name = "Имя обязательно";
+    if (formData.phone && !/^\+?[0-9]{9,12}$/.test(formData.phone)) newErrors.phone = "Неверный формат телефона";
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Неверный email";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+
     try {
       await updateProfile(formData);
       navigate("/app/profile");
@@ -117,9 +139,10 @@ export function EditProfile() {
                 type="text"
                 value={formData.full_name}
                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all"
+                className={`w-full px-4 py-3 bg-gray-50 border ${errors.full_name ? 'border-red-500' : 'border-gray-100'} rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all`}
                 placeholder="Как вас зовут?"
               />
+              {errors.full_name && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.full_name}</p>}
             </div>
             <div>
               <label className="text-xs text-gray-500 font-bold mb-1 block uppercase tracking-wider">Желаемая должность</label>
@@ -144,13 +167,27 @@ export function EditProfile() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all"
+                    className={`w-full px-4 py-3 bg-gray-50 border ${errors.phone ? 'border-red-500' : 'border-gray-100'} rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all`}
                     placeholder="+998"
                   />
+                  {errors.phone && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.phone}</p>}
                </div>
                <div>
                   <label className="text-xs text-gray-500 font-bold mb-1 block flex items-center gap-1 uppercase tracking-wider">
-                    <IconMapPin className="w-3 h-3 text-blue-600" /> Район
+                    {t('email')}
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className={`w-full px-4 py-3 bg-gray-50 border ${errors.email ? 'border-red-500' : 'border-gray-100'} rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all`}
+                    placeholder="example@mail.com"
+                  />
+                  {errors.email && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.email}</p>}
+               </div>
+               <div>
+                  <label className="text-xs text-gray-500 font-bold mb-1 block flex items-center gap-1 uppercase tracking-wider">
+                    <IconMapPin className="w-3 h-3 text-blue-600" /> {t('district')}
                   </label>
                   <input
                     type="text"
@@ -158,6 +195,18 @@ export function EditProfile() {
                     onChange={(e) => setFormData({...formData, district: e.target.value})}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all"
                     placeholder="Например: Чиланзар"
+                  />
+               </div>
+               <div className="md:col-span-2">
+                  <label className="text-xs text-gray-500 font-bold mb-1 block flex items-center gap-1 uppercase tracking-wider">
+                    {t('address')}
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all"
+                    placeholder="Полный адрес"
                   />
                </div>
             </div>
@@ -184,6 +233,30 @@ export function EditProfile() {
                 placeholder="Например: 5000000"
               />
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-gray-900 border-l-4 border-blue-600 pl-3">{t('medical_book')}</h3>
+            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl">
+              <span className="text-sm font-medium text-gray-700">{t('medical_book')}</span>
+              <input 
+                type="checkbox" 
+                checked={formData.has_medical_book}
+                onChange={(e) => setFormData({...formData, has_medical_book: e.target.checked})}
+                className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+            </div>
+            {formData.has_medical_book && (
+              <div>
+                <label className="text-xs text-gray-500 font-bold mb-1 block uppercase tracking-wider">{t('medical_book_expires')}</label>
+                <input
+                  type="date"
+                  value={formData.medical_book_expires_at}
+                  onChange={(e) => setFormData({...formData, medical_book_expires_at: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 transition-all"
+                />
+              </div>
+            )}
           </div>
 
           {/* Save Button */}

@@ -2,8 +2,8 @@
 from typing import Optional
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select, func
+from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
+from sqlalchemy import select, func, and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy.orm import selectinload, joinedload
@@ -84,6 +84,7 @@ async def list_vacancies(
 @router.get("/{vacancy_id}", response_model=VacancyOut)
 async def get_vacancy(
     vacancy_id: int, 
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
@@ -109,7 +110,7 @@ async def get_vacancy(
             )
             vacancy.is_favorite = fav_res.scalar() is not None
 
-    # Increment views
+    # Increment views (not using background_tasks yet to ensure session stability)
     vacancy.views_count += 1
     await db.commit()
     return vacancy
