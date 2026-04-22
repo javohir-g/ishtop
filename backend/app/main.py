@@ -14,6 +14,11 @@ from .routers.admin import router as admin_router
 from .routers.stats import router as stats_router
 from .routers.uploads import router as uploads_router
 from fastapi.staticfiles import StaticFiles
+import os
+
+# Ensure static directories exist before mounting
+os.makedirs("static", exist_ok=True)
+os.makedirs("static/uploads", exist_ok=True)
 
 app = FastAPI(
     title="Ish-Top API",
@@ -24,12 +29,7 @@ app = FastAPI(
 # Startup check for production config
 @app.on_event("startup")
 async def startup_event():
-    import os
     from .config import settings
-    
-    # Ensure static directories exist
-    os.makedirs("static", exist_ok=True)
-    os.makedirs("static/uploads", exist_ok=True)
     
     logger.info("=== STARTUP CONFIG CHECK ===")
     logger.info(f"DATABASE_URL ends with: ...{settings.DATABASE_URL[-10:] if settings.DATABASE_URL else 'NONE'}")
