@@ -9,8 +9,9 @@ from ..auth import get_current_user, require_role
 from ..database import get_db
 from ..models import (
     User, UserRole, Application, ApplicationStatus,
-    Vacancy, JobSeekerProfile,
+    Vacancy, JobSeekerProfile, Chat, Message
 )
+from sqlalchemy import func
 from ..schemas import ApplicationCreate, ApplicationOut
 
 router = APIRouter(prefix="/applications", tags=["Applications"])
@@ -54,6 +55,46 @@ async def apply_to_vacancy(
         status=ApplicationStatus.PENDING,
     )
     db.add(application)
+    await db.flush()
+
+    # Create or update Chat
+    chat_result = await db.execute(
+        select(Chat).where(
+            and_(
+                Chat.job_seeker_id == profile.id,
+                Chat.kindergarten_id == vacancy.kindergarten_id
+            )
+        )
+    )
+    chat = chat_result.scalar_one_or_none()
+
+    if not chat:
+        chat = Chat(
+            job_seeker_id=profile.id,
+            kindergarten_id=vacancy.kindergarten_id,
+            application_id=application.id
+        )
+        db.add(chat)
+        await db.flush()
+    else:
+        chat.application_id = application.id
+
+    # Create automatic message
+    first_message_text = f"Здравствуйте! Отклик на вакансию '{vacancy.title}'."
+    if data.cover_letter:
+        first_message_text += f"\n\nСопроводительное письмо:\n{data.cover_letter}"
+
+    msg = Message(
+        chat_id=chat.id,
+        sender_id=current_user.id,
+        content=first_message_text
+    )
+    db.add(msg)
+
+    # Update chat state
+    chat.last_message = first_message_text[:100]
+    chat.last_message_at = func.now()
+    chat.unread_by_employer += 1
 
     # Increment applications count
     vacancy.applications_count += 1
