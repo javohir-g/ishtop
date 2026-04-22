@@ -39,8 +39,8 @@ export function KindergartenApplications() {
   const updateStatus = async (e: React.MouseEvent, appId: number, newStatus: string) => {
     e.stopPropagation();
     try {
-      await api.patch(`/employer/applications/${appId}/status`, null, { 
-        params: { new_status: newStatus } 
+      await api.patch(`/employer/applications/${appId}/status`, { 
+        new_status: newStatus 
       });
       toast.success(`Статус обновлен на: ${mapStatus(newStatus).label}`);
       fetchApplications();

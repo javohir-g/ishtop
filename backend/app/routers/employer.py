@@ -7,6 +7,11 @@ from typing import List
 from ..database import get_db
 from ..models import User, UserRole, Vacancy, Application, ApplicationStatus, VacancyStatus, KindergartenEmployer, Kindergarten
 from ..schemas import VacancyOut, VacancyCreate, ApplicationOut, EmployerProfileOut, EmployerProfileUpdate
+from pydantic import BaseModel
+
+class ApplicationStatusUpdate(BaseModel):
+    new_status: ApplicationStatus
+
 from ..auth import get_current_user, require_role
 
 router = APIRouter(prefix="/employer", tags=["Employer"])
@@ -314,7 +319,7 @@ async def get_application_detail(
 @router.patch("/applications/{application_id}/status", response_model=ApplicationOut)
 async def update_application_status(
     application_id: int,
-    new_status: ApplicationStatus,
+    status_update: ApplicationStatusUpdate,
     current_user: User = Depends(require_role(UserRole.KINDERGARTEN_EMPLOYER)),
     db: AsyncSession = Depends(get_db)
 ):
@@ -336,8 +341,8 @@ async def update_application_status(
     if not application:
         raise HTTPException(status_code=404, detail="Application not found or access denied")
     
-    application.status = new_status
-    if new_status == ApplicationStatus.VIEWED and not application.viewed_at:
+    application.status = status_update.new_status
+    if status_update.new_status == ApplicationStatus.VIEWED and not application.viewed_at:
         application.viewed_at = func.now()
     
     await db.commit()
