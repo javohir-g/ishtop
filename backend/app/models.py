@@ -248,8 +248,8 @@ class Vacancy(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     kindergarten = relationship("Kindergarten", back_populates="vacancies")
-    applications = relationship("Application", back_populates="vacancy")
-    saved_by = relationship("SavedVacancy", back_populates="vacancy")
+    applications = relationship("Application", back_populates="vacancy", cascade="all, delete-orphan", passive_deletes=True)
+    saved_by = relationship("SavedVacancy", back_populates="vacancy", cascade="all, delete-orphan", passive_deletes=True)
 
 class Application(Base):
     __tablename__ = "applications"
